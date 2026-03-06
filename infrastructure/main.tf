@@ -1,8 +1,6 @@
-provider "azurerm" {
-  features {}
-}
-
-# 1. Resource Group Module
+# ---------------------------------------
+# Resource Group Module
+# ---------------------------------------
 module "resource_group" {
   source   = "./modules/resource_group"
   rg_name  = var.resource_group_name
@@ -10,7 +8,9 @@ module "resource_group" {
   tags     = var.tags
 }
 
-# 2. Networking Module
+# ---------------------------------------
+# Virtual Network Module
+# ---------------------------------------
 module "network" {
   source                = "./modules/vnet"
   rg_name               = module.resource_group.rg_name
@@ -21,7 +21,9 @@ module "network" {
   tags                  = var.tags
 }
 
-# 3. ACR Module
+# ---------------------------------------
+# Azure Container Registry
+# ---------------------------------------
 module "acr" {
   source   = "./modules/acr"
   rg_name  = module.resource_group.rg_name
@@ -30,12 +32,16 @@ module "acr" {
   tags     = var.tags
 }
 
-# 4. AKS Module
+# ---------------------------------------
+# Azure Kubernetes Service (AKS)
+# ---------------------------------------
 module "aks" {
-  source         = "./modules/aks"
+  source = "./modules/aks"
+
   rg_name        = module.resource_group.rg_name
   location       = var.location
   cluster_name   = var.aks_name
   vnet_subnet_id = module.network.subnet_id
-  tags           = var.tags
+
+  tags = var.tags
 }
