@@ -52,8 +52,3 @@ tags = {
   Project     = "E-Commerce-Microservice"
   Owner       = "ECM-Platform-Team"
 }
-
-# AKS Configuration
-kubernetes_version = "1.29"
-node_count         = 2
-vm_size            = "Standard_DS2_v2"
