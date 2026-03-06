@@ -1,9 +1,15 @@
-# 1. Resource Group
-resource "azurerm_resource_group" "rg" {
-  name     = "vinayak-project-rg"
+provider "azurerm" {
+  features {}
+}
+
+# 1. Resource Group Module
+module "resource_group" {
+  source   = "./modules/resource_group"
+  rg_name  = "vinayak-project-rg"
   location = "East US"
 }
 
+<<<<<<< HEAD
 # 2. Azure Container Registry (ACR)
 resource "azurerm_container_registry" "acr" {
   name                = "vinayakprojectacr" 
@@ -37,4 +43,20 @@ resource "azurerm_role_assignment" "aks_to_acr" {
   role_definition_name             = "AcrPull"
   scope                            = azurerm_container_registry.acr.id
   skip_service_principal_aad_check = true
+=======
+# 2. ACR Module
+module "acr" {
+  source  = "./modules/acr"
+  rg_name = module.resource_group.rg_name
+  location = "East US"
+  acr_name = "vinayakregistry2026" # Unique naav dya
+}
+
+# 3. AKS Module
+module "aks" {
+  source       = "./modules/aks"
+  rg_name      = module.resource_group.rg_name
+  location     = "East US"
+  cluster_name = "vinayak-aks-cluster"
+>>>>>>> 9c9bd4a (update module)
 }
