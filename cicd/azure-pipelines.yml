@@ -6,7 +6,7 @@ pool:
 
 variables:
   # Service Connection Names 
-  azureServiceConnection: 'Azure-Service-Connection'
+  azureServiceConnection: 'my-azure-connection'
   acrServiceConnection: 'ACR-Service-Connection'
   aksServiceConnection: 'AKS-Service-Connection'
   
