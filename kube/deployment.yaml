@@ -64,4 +64,4 @@ spec:
   selector:
     app: user-api
 
-# (Note: Same pattern madhe Product-API ani Order-API che blocks astil)
+
