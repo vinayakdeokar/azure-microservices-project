@@ -5,58 +5,33 @@ provider "azurerm" {
 # 1. Resource Group Module
 module "resource_group" {
   source   = "./modules/resource_group"
-  rg_name  = "vinayak-project-rg"
-  location = "East US"
+  rg_name  = var.resource_group_name
+  location = var.location
 }
 
-<<<<<<< HEAD
-# 2. Azure Container Registry (ACR)
-resource "azurerm_container_registry" "acr" {
-  name                = "vinayakprojectacr" 
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  sku                 = "Basic"
-  admin_enabled       = true
+# 2. Networking Module (Output: subnet_id)
+module "network" {
+  source                = "./modules/vnet"
+  rg_name               = module.resource_group.rg_name
+  location              = var.location
+  prefix                = var.prefix
+  vnet_address_space    = var.vnet_space
+  subnet_address_prefix = var.subnet_prefix
 }
 
-# 3. Azure Kubernetes Service (AKS)
-resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "vinayak-aks-cluster"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = "vinayakaks"
-
-  default_node_pool {
-    name       = "default"
-    node_count = 1
-    vm_size    = "Standard_B2s" 
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
-}
-
-# 4. Role Assignment 
-resource "azurerm_role_assignment" "aks_to_acr" {
-  principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-  role_definition_name             = "AcrPull"
-  scope                            = azurerm_container_registry.acr.id
-  skip_service_principal_aad_check = true
-=======
-# 2. ACR Module
+# 3. ACR Module
 module "acr" {
-  source  = "./modules/acr"
-  rg_name = module.resource_group.rg_name
-  location = "East US"
-  acr_name = "vinayakregistry2026" # Unique naav dya
+  source   = "./modules/acr"
+  rg_name  = module.resource_group.rg_name
+  location = var.location
+  acr_name = var.acr_name
 }
 
-# 3. AKS Module
+# 4. AKS Module (Input: subnet_id from network module)
 module "aks" {
-  source       = "./modules/aks"
-  rg_name      = module.resource_group.rg_name
-  location     = "East US"
-  cluster_name = "vinayak-aks-cluster"
->>>>>>> 9c9bd4a (update module)
+  source         = "./modules/aks"
+  rg_name        = module.resource_group.rg_name
+  location       = var.location
+  cluster_name   = var.aks_name
+  vnet_subnet_id = module.network.subnet_id
 }

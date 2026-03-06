@@ -1,11 +1,4 @@
-variable "cluster_name" {
-  type        = string
-}
-
-variable "rg_name" {
-  type        = string
-}
-
-variable "location" {
-  type        = string
-}
+variable "cluster_name" {}
+variable "location" {}
+variable "rg_name" {}
+variable "vnet_subnet_id" {} 
