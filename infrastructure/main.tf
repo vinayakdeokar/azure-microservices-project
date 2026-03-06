@@ -4,9 +4,9 @@ resource "azurerm_resource_group" "rg" {
   location = "East US"
 }
 
-# 2. Azure Container Registry (ACR) - Jithe Docker images save hotil
+# 2. Azure Container Registry (ACR)
 resource "azurerm_container_registry" "acr" {
-  name                = "vinayakprojectacr" # He naav unique pahije (fkt letters ani numbers)
+  name                = "vinayakprojectacr" 
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
@@ -23,7 +23,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   default_node_pool {
     name       = "default"
     node_count = 1
-    vm_size    = "Standard_B2s" # Swasta VM size
+    vm_size    = "Standard_B2s" 
   }
 
   identity {
