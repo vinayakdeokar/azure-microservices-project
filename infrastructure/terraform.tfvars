@@ -1,7 +1,7 @@
 resource_group_name = "ecommerce-rg"
 location            = "East US"
-acr_name            = "ecommerceacr2026"
-aks_name            = "ecommerce-aks-cluster"
+acr_name            = "ecom-acr-dev-001"
+aks_name            = "ecom-aks-cluster-dev-001"
 prefix              = "ecom"
 
 # Networking Details
