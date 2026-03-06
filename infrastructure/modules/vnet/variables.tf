@@ -1,5 +1,29 @@
-variable "rg_name" {}
-variable "location" {}
-variable "prefix" {}
-variable "vnet_address_space" { type = list(string) }
-variable "subnet_address_prefix" { type = list(string) }
+variable "prefix" {
+  description = "Prefix used for resource naming"
+  type        = string
+}
+
+variable "rg_name" {
+  description = "Resource group name"
+  type        = string
+}
+
+variable "location" {
+  description = "Azure region"
+  type        = string
+}
+
+variable "vnet_address_space" {
+  description = "Address space for the virtual network"
+  type        = list(string)
+}
+
+variable "subnet_address_prefix" {
+  description = "Subnet address prefix"
+  type        = list(string)
+}
+
+variable "tags" {
+  description = "Common tags applied to resources"
+  type        = map(string)
+}
