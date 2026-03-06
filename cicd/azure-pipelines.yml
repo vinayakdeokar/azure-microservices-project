@@ -7,8 +7,8 @@ pool:
 variables:
   # Service Connection Names 
   azureServiceConnection: 'my-azure-connection'
-  acrServiceConnection: 'ACR-Service-Connection'
-  aksServiceConnection: 'AKS-Service-Connection'
+  # acrServiceConnection: 'ACR-Service-Connection'
+  # aksServiceConnection: 'AKS-Service-Connection'
   
   # ACR Login Server 
   acrHost: 'vinayakregistry2026.azurecr.io'
