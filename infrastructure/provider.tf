@@ -5,16 +5,15 @@ terraform {
       version = "~> 3.0"
     }
   }
-}
-backend "azurerm" {
-    resource_group_name  = "tfstate-rg"        
-    storage_account_name = "vinayaktfstorage"        
-    container_name       = "tfstate"                  
-    key                  = "terraform.tfstate"        
+
+  backend "azurerm" {
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "ecomtfstate001"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 
 provider "azurerm" {
   features {}
 }
-
