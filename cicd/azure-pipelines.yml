@@ -11,7 +11,7 @@ variables:
   # aksServiceConnection: 'AKS-Service-Connection'
   
   # ACR Login Server 
-  acrHost: 'vinayakregistry2026.azurecr.io'
+  # acrHost: 'vinayakregistry2026.azurecr.io'
 
   # Terraform Backend 
   rgName: 'tfstate-rg'
@@ -53,66 +53,66 @@ stages:
         environmentServiceNameAzureRM: '$(azureServiceConnection)'
 
 # --- STAGE 2: BUILD & PUSH (Docker Images for 4 Containers) ---
-- stage: Build
-  displayName: 'Step 2: Build & Push to ACR'
-  dependsOn: Infrastructure
-  jobs:
-  - job: BuildAndPush
-    steps:
-    # 1. Frontend
-    - task: Docker@2
-      displayName: 'Build & Push Frontend'
-      inputs:
-        containerRegistry: '$(acrServiceConnection)'
-        repository: 'frontend'
-        command: 'buildAndPush' 
-        Dockerfile: 'frontend/Dockerfile'
-        tags: 'latest'
+# - stage: Build
+#   displayName: 'Step 2: Build & Push to ACR'
+#   dependsOn: Infrastructure
+#   jobs:
+#   - job: BuildAndPush
+#     steps:
+#     # 1. Frontend
+#     - task: Docker@2
+#       displayName: 'Build & Push Frontend'
+#       inputs:
+#         containerRegistry: '$(acrServiceConnection)'
+#         repository: 'frontend'
+#         command: 'buildAndPush' 
+#         Dockerfile: 'frontend/Dockerfile'
+#         tags: 'latest'
 
-    # 2. User API
-    - task: Docker@2
-      displayName: 'Build & Push User API'
-      inputs:
-        containerRegistry: '$(acrServiceConnection)'
-        repository: 'user-api'
-        command: 'buildAndPush'
-        Dockerfile: 'user-api/Dockerfile'
-        tags: 'latest'
+#     # 2. User API
+#     - task: Docker@2
+#       displayName: 'Build & Push User API'
+#       inputs:
+#         containerRegistry: '$(acrServiceConnection)'
+#         repository: 'user-api'
+#         command: 'buildAndPush'
+#         Dockerfile: 'user-api/Dockerfile'
+#         tags: 'latest'
 
-    # 3. Product API
-    - task: Docker@2
-      displayName: 'Build & Push Product API'
-      inputs:
-        containerRegistry: '$(acrServiceConnection)'
-        repository: 'product-api'
-        command: 'buildAndPush'
-        Dockerfile: 'product-api/Dockerfile'
-        tags: 'latest'
+#     # 3. Product API
+#     - task: Docker@2
+#       displayName: 'Build & Push Product API'
+#       inputs:
+#         containerRegistry: '$(acrServiceConnection)'
+#         repository: 'product-api'
+#         command: 'buildAndPush'
+#         Dockerfile: 'product-api/Dockerfile'
+#         tags: 'latest'
 
-    # 4. Order API
-    - task: Docker@2
-      displayName: 'Build & Push Order API'
-      inputs:
-        containerRegistry: '$(acrServiceConnection)'
-        repository: 'order-api'
-        command: 'buildAndPush'
-        Dockerfile: 'order-api/Dockerfile'
-        tags: 'latest'
+#     # 4. Order API
+#     - task: Docker@2
+#       displayName: 'Build & Push Order API'
+#       inputs:
+#         containerRegistry: '$(acrServiceConnection)'
+#         repository: 'order-api'
+#         command: 'buildAndPush'
+#         Dockerfile: 'order-api/Dockerfile'
+#         tags: 'latest'
 
-# --- STAGE 3: K8S DEPLOY (Kubernetes Manifests) ---
-- stage: Deploy
-  displayName: 'Step 3: Deploy to AKS Cluster'
-  dependsOn: Build
-  jobs:
-  - job: Kubernetes
-    steps:
-    - task: KubernetesManifest@0
-      displayName: 'Apply All YAMLs'
-      inputs:
-        action: 'deploy'
-        kubernetesServiceConnection: '$(aksServiceConnection)'
-        manifests: |
-          $(System.DefaultWorkingDirectory)/k8s/frontend.yaml
-          $(System.DefaultWorkingDirectory)/k8s/user-api.yaml
-          $(System.DefaultWorkingDirectory)/k8s/product-api.yaml
-          $(System.DefaultWorkingDirectory)/k8s/order-api.yaml
+# # --- STAGE 3: K8S DEPLOY (Kubernetes Manifests) ---
+# - stage: Deploy
+#   displayName: 'Step 3: Deploy to AKS Cluster'
+#   dependsOn: Build
+#   jobs:
+#   - job: Kubernetes
+#     steps:
+#     - task: KubernetesManifest@0
+#       displayName: 'Apply All YAMLs'
+#       inputs:
+#         action: 'deploy'
+#         kubernetesServiceConnection: '$(aksServiceConnection)'
+#         manifests: |
+#           $(System.DefaultWorkingDirectory)/k8s/frontend.yaml
+#           $(System.DefaultWorkingDirectory)/k8s/user-api.yaml
+#           $(System.DefaultWorkingDirectory)/k8s/product-api.yaml
+#           $(System.DefaultWorkingDirectory)/k8s/order-api.yaml
