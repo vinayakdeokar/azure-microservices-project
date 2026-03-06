@@ -52,3 +52,31 @@ variable "tags" {
   description = "Common tags applied to all resources"
   type        = map(string)
 }
+# ---------------------------------------
+# AKS Cluster Configuration
+# ---------------------------------------
+
+variable "kubernetes_version" {
+  description = "AKS Kubernetes version"
+  type        = string
+}
+
+variable "node_count" {
+  description = "Number of nodes in default node pool"
+  type        = number
+}
+
+variable "vm_size" {
+  description = "VM size for AKS nodes"
+  type        = string
+}
+
+variable "project" {
+  description = "Project name"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+}

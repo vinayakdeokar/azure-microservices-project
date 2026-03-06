@@ -12,5 +12,25 @@ module "aks" {
   node_count         = var.node_count
   vm_size            = var.vm_size
 
+  default_node_pool {
+    name           = "system"
+    node_count     = var.node_count
+    vm_size        = var.vm_size
+    vnet_subnet_id = var.vnet_subnet_id
+
+    enable_auto_scaling = true
+    min_count           = 1
+    max_count           = 3
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  network_profile {
+    network_plugin    = "azure"
+    load_balancer_sku = "standard"
+  }
+
   tags = var.tags
 }

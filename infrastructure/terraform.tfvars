@@ -4,7 +4,9 @@
 
 environment = "dev"
 project     = "ecom"
-region      = "eastus"
+
+# Terraform variables मध्ये location वापरले आहे
+location = "eastus"
 
 # ===============================
 # Resource Naming
@@ -12,11 +14,21 @@ region      = "eastus"
 
 resource_group_name = "ecom-rg-dev-eastus"
 
-acr_name = "ecom-acr-dev-001"
+acr_name = "ecomacrdev001"
 
 aks_name = "ecom-aks-cluster-dev-001"
 
 prefix = "ecom"
+
+# ===============================
+# AKS Cluster Configuration
+# ===============================
+
+kubernetes_version = "1.28.5"
+
+node_count = 2
+
+vm_size = "Standard_DS2_v2"
 
 # ===============================
 # Networking Configuration
@@ -39,7 +51,6 @@ tags = {
   Environment = "dev"
   Project     = "E-Commerce-Microservice"
   Owner       = "ECM-Platform-Team"
-
 }
 
 # AKS Configuration
