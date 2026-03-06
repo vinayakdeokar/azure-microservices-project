@@ -24,7 +24,7 @@ prefix = "ecom"
 # AKS Cluster Configuration
 # ===============================
 
-kubernetes_version = "1.30.3"
+kubernetes_version = "1.34"
 
 node_count = 2
 
