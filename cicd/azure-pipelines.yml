@@ -5,77 +5,114 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  azureServiceConnection: 'my-azure-connection'
-  acrLoginServer: 'vinayakprojectacr.azurecr.io'
-  resourceGroup: 'vinayak-project-rg'
-  aksCluster: 'vinayak-aks-cluster'
+  # Service Connection Names 
+  azureServiceConnection: 'Azure-Service-Connection'
+  acrServiceConnection: 'ACR-Service-Connection'
+  aksServiceConnection: 'AKS-Service-Connection'
+  
+  # ACR Login Server 
+  acrHost: 'vinayakregistry2026.azurecr.io'
+
+  # Terraform Backend 
+  rgName: 'tfstate-rg'
+  storageAccount: 'vinayaktfstorage'
+  container: 'tfstate'
+  tfstateKey: 'terraform.tfstate'
 
 stages:
-# STAGE 1: Infrastructure (Terraform)
-- stage: Infra
-  displayName: 'Provision Infrastructure'
+
+# --- STAGE 1: INFRASTRUCTURE (Terraform) ---
+- stage: Infrastructure
+  displayName: 'Step 1: Deploy Azure Infra'
   jobs:
   - job: Terraform
     steps:
-    - task: TerraformInstaller@1
+    - task: TerraformInstaller@0
       inputs:
         terraformVersion: 'latest'
-    - task: TerraformTaskV4@4
-      displayName: 'Terraform Init & Apply'
+
+    - task: TerraformTaskV2@2
+      displayName: 'Terraform Init'
       inputs:
         provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
         backendServiceArm: '$(azureServiceConnection)'
-        backendAzureRmResourceGroupName: 'tfstate-rg' 
-        backendAzureRmStorageAccountName: 'vinayaktfstorage'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'terraform.tfstate'
-    - task: TerraformTaskV4@4
+        backendAzureRmResourceGroupName: '$(rgName)'
+        backendAzureRmStorageAccountName: '$(storageAccount)'
+        backendAzureRmContainerName: '$(container)'
+        backendAzureRmKey: '$(tfstateKey)'
+
+    - task: TerraformTaskV2@2
+      displayName: 'Terraform Apply'
       inputs:
         provider: 'azurerm'
         command: 'apply'
         workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
+        commandOptions: '-var-file="terraform.tfvars" -auto-approve'
         environmentServiceNameAzureRM: '$(azureServiceConnection)'
-        commandOptions: '-auto-approve'
 
-# STAGE 2: Build & Push Images (4 Containers)
+# --- STAGE 2: BUILD & PUSH (Docker Images for 4 Containers) ---
 - stage: Build
-  displayName: 'Build and Push Images'
-  dependsOn: Infra
+  displayName: 'Step 2: Build & Push to ACR'
+  dependsOn: Infrastructure
   jobs:
-  - job: BuildImages
+  - job: BuildAndPush
     steps:
+    # 1. Frontend
     - task: Docker@2
-      displayName: 'Build Frontend'
+      displayName: 'Build & Push Frontend'
       inputs:
-        command: buildAndPush
+        containerRegistry: '$(acrServiceConnection)'
         repository: 'frontend'
-        dockerfile: 'src/frontend/Dockerfile'
-        containerRegistry: '$(azureServiceConnection)' # ACR Service Connection
+        command: 'buildAndPush' 
+        Dockerfile: 'frontend/Dockerfile'
         tags: 'latest'
-    
+
+    # 2. User API
     - task: Docker@2
-      displayName: 'Build User API'
+      displayName: 'Build & Push User API'
       inputs:
-        command: buildAndPush
+        containerRegistry: '$(acrServiceConnection)'
         repository: 'user-api'
-        dockerfile: 'src/user-api/Dockerfile'
-        containerRegistry: '$(azureServiceConnection)'
+        command: 'buildAndPush'
+        Dockerfile: 'user-api/Dockerfile'
         tags: 'latest'
 
-    # (Same steps for Product-API and Order-API)
+    # 3. Product API
+    - task: Docker@2
+      displayName: 'Build & Push Product API'
+      inputs:
+        containerRegistry: '$(acrServiceConnection)'
+        repository: 'product-api'
+        command: 'buildAndPush'
+        Dockerfile: 'product-api/Dockerfile'
+        tags: 'latest'
 
-# STAGE 3: Deploy to AKS
+    # 4. Order API
+    - task: Docker@2
+      displayName: 'Build & Push Order API'
+      inputs:
+        containerRegistry: '$(acrServiceConnection)'
+        repository: 'order-api'
+        command: 'buildAndPush'
+        Dockerfile: 'order-api/Dockerfile'
+        tags: 'latest'
+
+# --- STAGE 3: K8S DEPLOY (Kubernetes Manifests) ---
 - stage: Deploy
-  displayName: 'Deploy to Kubernetes'
+  displayName: 'Step 3: Deploy to AKS Cluster'
   dependsOn: Build
   jobs:
-  - job: Deploy
+  - job: Kubernetes
     steps:
     - task: KubernetesManifest@0
-      displayName: 'Apply Manifests'
+      displayName: 'Apply All YAMLs'
       inputs:
-        action: deploy
-        kubernetesServiceConnection: 'my-aks-connection'
-        manifests: 'kube/deployment.yaml'
+        action: 'deploy'
+        kubernetesServiceConnection: '$(aksServiceConnection)'
+        manifests: |
+          $(System.DefaultWorkingDirectory)/k8s/frontend.yaml
+          $(System.DefaultWorkingDirectory)/k8s/user-api.yaml
+          $(System.DefaultWorkingDirectory)/k8s/product-api.yaml
+          $(System.DefaultWorkingDirectory)/k8s/order-api.yaml
