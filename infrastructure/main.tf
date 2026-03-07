@@ -46,5 +46,8 @@ module "aks" {
   node_count         = var.node_count
   vm_size            = var.vm_size
 
+  service_cidr   = var.service_cidr
+  dns_service_ip = var.dns_service_ip
+
   tags = var.tags
 }
