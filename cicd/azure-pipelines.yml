@@ -19,11 +19,14 @@ variables:
   backendContainer: 'tfstate'
   backendKey: 'ecom-dev-terraform.tfstate'
 
+  acrName: 'ecomacrdev001'
+  acrLoginServer: 'ecomacrdev001.azurecr.io'
+
   # ---------------------------------------
   # ACR & AKS Connections (Future Stages)
   # ---------------------------------------
-  # acrServiceConnection: 'ACR-Service-Connection'
-  # aksServiceConnection: 'AKS-Service-Connection'
+  acrServiceConnection: 'my-azure-connection'
+  aksServiceConnection: 'my-azure-connection'
 
   # ---------------------------------------
   # ACR Login Server
@@ -94,82 +97,77 @@ stages:
         environmentServiceNameAzureRM: '$(azureServiceConnection)'
 
 
-# =======================================
-# STAGE 2: BUILD & PUSH DOCKER IMAGES
-# =======================================
-
-# - stage: Build
-#   displayName: 'Step 2: Build & Push Docker Images'
-#   dependsOn: Infrastructure
-
-#   jobs:
-#   - job: BuildAndPush
-#     displayName: 'Build & Push Containers to ACR'
-
-#     steps:
-
-#     # Frontend Image
-#     - task: Docker@2
-#       displayName: 'Build & Push Frontend'
-#       inputs:
-#         containerRegistry: '$(acrServiceConnection)'
-#         repository: 'frontend'
-#         command: 'buildAndPush'
-#         Dockerfile: 'frontend/Dockerfile'
-#         tags: 'latest'
-
-#     # User API Image
-#     - task: Docker@2
-#       displayName: 'Build & Push User API'
-#       inputs:
-#         containerRegistry: '$(acrServiceConnection)'
-#         repository: 'user-api'
-#         command: 'buildAndPush'
-#         Dockerfile: 'user-api/Dockerfile'
-#         tags: 'latest'
-
-#     # Product API Image
-#     - task: Docker@2
-#       displayName: 'Build & Push Product API'
-#       inputs:
-#         containerRegistry: '$(acrServiceConnection)'
-#         repository: 'product-api'
-#         command: 'buildAndPush'
-#         Dockerfile: 'product-api/Dockerfile'
-#         tags: 'latest'
-
-#     # Order API Image
-#     - task: Docker@2
-#       displayName: 'Build & Push Order API'
-#       inputs:
-#         containerRegistry: '$(acrServiceConnection)'
-#         repository: 'order-api'
-#         command: 'buildAndPush'
-#         Dockerfile: 'order-api/Dockerfile'
-#         tags: 'latest'
+      
 
 
-# =======================================
-# STAGE 3: DEPLOY TO AKS
-# =======================================
+# ===================================
+# STAGE 2 - BUILD & PUSH DOCKER
+# ===================================
+- stage: Build
+  displayName: Build & Push Docker Images
+  dependsOn: Infrastructure
 
-# - stage: Deploy
-#   displayName: 'Step 3: Deploy to AKS Cluster'
-#   dependsOn: Build
+  jobs:
+  - job: BuildAndPush
+    displayName: Build Containers
 
-#   jobs:
-#   - job: KubernetesDeploy
-#     displayName: 'Deploy Kubernetes Manifests'
+    steps:
 
-#     steps:
+    - task: AzureCLI@2
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az acr login --name $(acrName)
 
-#     - task: KubernetesManifest@0
-#       displayName: 'Deploy Application to AKS'
-#       inputs:
-#         action: 'deploy'
-#         kubernetesServiceConnection: '$(aksServiceConnection)'
-#         manifests: |
-#           $(System.DefaultWorkingDirectory)/k8s/frontend.yaml
-#           $(System.DefaultWorkingDirectory)/k8s/user-api.yaml
-#           $(System.DefaultWorkingDirectory)/k8s/product-api.yaml
-#           $(System.DefaultWorkingDirectory)/k8s/order-api.yaml
+    - script: |
+        docker build -t $(acrLoginServer)/frontend:latest src/frontend
+        docker push $(acrLoginServer)/frontend:latest
+      displayName: Build & Push Frontend
+
+    - script: |
+        docker build -t $(acrLoginServer)/user-api:latest src/user-api
+        docker push $(acrLoginServer)/user-api:latest
+      displayName: Build & Push User API
+
+    - script: |
+        docker build -t $(acrLoginServer)/product-api:latest src/product-api
+        docker push $(acrLoginServer)/product-api:latest
+      displayName: Build & Push Product API
+
+    - script: |
+        docker build -t $(acrLoginServer)/order-api:latest src/order-api
+        docker push $(acrLoginServer)/order-api:latest
+      displayName: Build & Push Order API
+
+
+# ===================================
+# STAGE 3 - DEPLOY TO AKS
+# ===================================
+- stage: Deploy
+  displayName: Deploy to AKS
+  dependsOn: Build
+
+  jobs:
+  - job: KubernetesDeploy
+    displayName: Deploy Kubernetes Manifests
+
+    steps:
+
+    - task: AzureCLI@2
+      displayName: Connect to AKS
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials \
+            --resource-group ecom-rg-dev-canadacentral \
+            --name ecom-aks-cluster-dev-001 \
+            --overwrite-existing
+
+    - script: |
+        kubectl apply -f kube/
+      displayName: Deploy Kubernetes Manifests
