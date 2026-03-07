@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: user-api
-        image: vinayakregistry2026.azurecr.io/user-api:latest
+        image: ecomacrdev001.azurecr.io/user-api:latest
         ports:
         - containerPort: 3000
 ---
