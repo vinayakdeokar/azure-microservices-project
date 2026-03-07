@@ -30,7 +30,7 @@ vm_size            = "Standard_D2as_v5"
 # Networking Configuration
 # ===============================
 
-vnet_space   = ["10.0.0.0/16"]
+vnet_space    = ["10.0.0.0/16"]
 subnet_prefix = ["10.0.1.0/24"]
 
 # ===============================

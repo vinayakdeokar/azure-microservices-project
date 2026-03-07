@@ -8,13 +8,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name           = "system"
-    node_count     = var.node_count
+    node_count     = 1
     vm_size        = var.vm_size
     vnet_subnet_id = var.vnet_subnet_id
-
-    enable_auto_scaling = true
-    min_count           = 1
-    max_count           = 3
   }
 
   identity {
@@ -22,8 +18,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin    = "azure"
-    load_balancer_sku = "standard"
+    network_plugin      = "azure"
+    network_plugin_mode = "overlay"
+    load_balancer_sku   = "standard"
   }
 
   tags = var.tags
