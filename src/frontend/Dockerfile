@@ -1,8 +1,8 @@
 # Nginx base image
 FROM nginx:alpine
 
-# HTML file Nginx chya default path var copy kara
 COPY index.html /usr/share/nginx/html/
 
-# Port 80 open kara
+COPY images/ /usr/share/nginx/html/images/
+
 EXPOSE 80
