@@ -82,8 +82,7 @@ module "ingress" {
 module "autoscaler" {
   source = "./modules/autoscaler"
 
-  aks_cluster_id = module.aks.aks_id
-  rg_name        = module.resource_group.rg_name
+  aks_id = module.aks.aks_id
 
   nodepool_name = var.autoscaler_nodepool_name
   vm_size       = var.vm_size
