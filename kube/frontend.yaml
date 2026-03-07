@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: vinayakregistry2026.azurecr.io/frontend:latest
+        image: ecomacrdev001.azurecr.io/frontend:latest
         ports:
         - containerPort: 80
 ---
