@@ -34,7 +34,7 @@ vnet_space    = ["10.0.0.0/16"]
 subnet_prefix = ["10.0.1.0/24"]
 
 service_cidr   = "10.1.0.0/16"
-dns_service_ip = "10.1.0.10
+dns_service_ip = "10.1.0.10"
 
 # ===============================
 # Resource Tags
