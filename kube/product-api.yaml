@@ -16,7 +16,7 @@ spec:
       - name: product-api
         image: ecomacrdev001.azurecr.io/product-api:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 3001
 ---
 apiVersion: v1
 kind: Service
@@ -26,6 +26,6 @@ spec:
   type: ClusterIP
   ports:
   - port: 80
-    targetPort: 5000
+    targetPort: 3001
   selector:
     app: product-api
