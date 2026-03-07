@@ -165,15 +165,17 @@ stages:
         kubectl apply -f kube/
       displayName: Deploy Kubernetes Manifests
 
-    - stage: Verify
-      displayName: Verify Deployment
-      dependsOn: Deploy
-    
-      jobs:
-      - job: Check
-        steps:
-        - script: |
-            kubectl get pods
-            kubectl get svc
-          displayName: Check AKS
+# ===================================
+# STAGE 4 - VERIFY
+# ===================================
+- stage: Verify
+  displayName: Verify Deployment
+  dependsOn: Deploy
 
+  jobs:
+  - job: Check
+    steps:
+    - script: |
+        kubectl get pods
+        kubectl get svc
+      displayName: Check AKS
