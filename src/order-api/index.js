@@ -1,16 +1,16 @@
-const express = require('express');
+const express = require("express");
+const { MongoClient } = require("mongodb");
+
 const app = express();
-const PORT = 4000;
+app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.json({ 
-        service: "Order API", 
-        status: "Active", 
-        message: "Order placed successfully!",
-        orderId: Math.floor(Math.random() * 10000)
-    });
+const client = new MongoClient("mongodb://mongodb-service:27017");
+const db = client.db("ecommerce");
+
+app.post("/order", async (req, res) => {
+  const order = req.body;
+  await db.collection("orders").insertOne(order);
+  res.send({ status: "Order placed" });
 });
 
-app.listen(PORT, () => {
-    console.log(`Order API running on port ${PORT}`);
-});
+app.listen(3002, () => console.log("Order API running"));
