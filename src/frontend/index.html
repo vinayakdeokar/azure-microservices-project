@@ -1,25 +1,49 @@
-<script>
-fetch("http://product-api-service/products")
-.then(res => res.json())
-.then(data => {
-  let html = "";
-  data.forEach(p => {
-    html += `
-      <div>
-        <h3>${p.name}</h3>
-        <p>${p.price}</p>
-        <button onclick="buy('${p.name}', ${p.price})">Buy</button>
-      </div>
-    `;
-  });
-  document.getElementById("products").innerHTML = html;
-});
+<!DOCTYPE html>
+<html>
+<head>
+<title>Vinayak E-Commerce</title>
+</head>
 
-function buy(name, price){
-  fetch("http://order-api-service/order", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({product:name, price:price})
-  })
+<body>
+
+<h1>🚀 Vinayak's Multi-Container App</h1>
+
+<h2>Frontend Service</h2>
+<p>Status: <span style="color:green">Online</span></p>
+
+<h2>Products</h2>
+
+<div id="products"></div>
+
+<script>
+
+async function loadProducts() {
+
+    const response = await fetch("/products")
+    const products = await response.json()
+
+    const container = document.getElementById("products")
+
+    products.forEach(p => {
+
+        const item = document.createElement("div")
+
+        item.innerHTML = `
+            <h3>${p.name}</h3>
+            <p>Price: ₹${p.price}</p>
+            <button>Buy</button>
+            <hr>
+        `
+
+        container.appendChild(item)
+
+    })
+
 }
+
+loadProducts()
+
 </script>
+
+</body>
+</html>
