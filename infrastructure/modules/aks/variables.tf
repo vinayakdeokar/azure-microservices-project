@@ -32,3 +32,12 @@ variable "vnet_subnet_id" {
 variable "tags" {
   type = map(string)
 }
+variable "service_cidr" {
+  description = "AKS service CIDR"
+  type        = string
+}
+
+variable "dns_service_ip" {
+  description = "AKS DNS service IP"
+  type        = string
+}
