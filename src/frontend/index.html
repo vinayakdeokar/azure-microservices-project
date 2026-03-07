@@ -1,18 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Vinayak's E-Commerce</title>
-    <style>
-        body { font-family: Arial; text-align: center; background-color: #f4f4f4; }
-        .card { border: 1px solid #ccc; padding: 20px; margin: 20px; background: white; border-radius: 10px; }
-    </style>
-</head>
-<body>
-    <h1>🚀 Vinayak's Multi-Container App</h1>
-    <div class="card">
-        <h2>Frontend Service</h2>
-        <p>Status: <span style="color: green;">Online</span></p>
-    </div>
-</body>
-</html>
+<script>
+fetch("http://product-api-service/products")
+.then(res => res.json())
+.then(data => {
+  let html = "";
+  data.forEach(p => {
+    html += `
+      <div>
+        <h3>${p.name}</h3>
+        <p>${p.price}</p>
+        <button onclick="buy('${p.name}', ${p.price})">Buy</button>
+      </div>
+    `;
+  });
+  document.getElementById("products").innerHTML = html;
+});
+
+function buy(name, price){
+  fetch("http://order-api-service/order", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({product:name, price:price})
+  })
+}
+</script>
