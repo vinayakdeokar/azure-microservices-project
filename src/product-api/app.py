@@ -1,14 +1,15 @@
 from flask import Flask, jsonify
+from pymongo import MongoClient
 
 app = Flask(__name__)
 
-@app.route('/')
-def get_products():
-    products = [
-        {"id": 1, "name": "Laptop", "price": 50000},
-        {"id": 2, "name": "Mobile", "price": 20000}
-    ]
-    return jsonify({"service": "Product API", "status": "Running", "products": products})
+client = MongoClient("mongodb://mongodb-service:27017/")
+db = client["ecommerce"]
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+@app.route("/products")
+def products():
+    products = list(db.products.find({}, {"_id":0}))
+    return jsonify(products)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=3001)
