@@ -89,3 +89,22 @@ variable "environment" {
   description = "Environment name"
   type        = string
 }
+variable "keyvault_name" {
+  description = "Azure Key Vault Name"
+  type        = string
+}
+
+variable "autoscaler_nodepool_name" {
+  description = "AKS autoscaler node pool name"
+  type        = string
+}
+
+variable "autoscaler_min_nodes" {
+  description = "Minimum nodes for autoscaler"
+  type        = number
+}
+
+variable "autoscaler_max_nodes" {
+  description = "Maximum nodes for autoscaler"
+  type        = number
+}
