@@ -103,6 +103,9 @@ stages:
 # ===================================
 # STAGE 2 - BUILD & PUSH DOCKER
 # ===================================
+# ===================================
+# STAGE 2 - BUILD & PUSH DOCKER
+# ===================================
 - stage: Build
   displayName: Build & Push Docker Images
   dependsOn: Infrastructure
@@ -123,24 +126,59 @@ stages:
           az acr login --name $(acrName)
 
     - script: |
-        docker build -t $(acrLoginServer)/frontend:latest src/frontend
-        docker push $(acrLoginServer)/frontend:latest
+        docker buildx create --use
+        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/frontend:latest src/frontend --push
       displayName: Build & Push Frontend
 
     - script: |
-        docker build -t $(acrLoginServer)/user-api:latest src/user-api
-        docker push $(acrLoginServer)/user-api:latest
+        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/user-api:latest src/user-api --push
       displayName: Build & Push User API
 
     - script: |
-        docker build -t $(acrLoginServer)/product-api:latest src/product-api
-        docker push $(acrLoginServer)/product-api:latest
+        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/product-api:latest src/product-api --push
       displayName: Build & Push Product API
 
     - script: |
-        docker build -t $(acrLoginServer)/order-api:latest src/order-api
-        docker push $(acrLoginServer)/order-api:latest
+        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/order-api:latest src/order-api --push
       displayName: Build & Push Order API
+# - stage: Build
+#   displayName: Build & Push Docker Images
+#   dependsOn: Infrastructure
+
+#   jobs:
+#   - job: BuildAndPush
+#     displayName: Build Containers
+
+#     steps:
+
+#     - task: AzureCLI@2
+#       displayName: Login to ACR
+#       inputs:
+#         azureSubscription: $(azureServiceConnection)
+#         scriptType: ps
+#         scriptLocation: inlineScript
+#         inlineScript: |
+#           az acr login --name $(acrName)
+
+#     - script: |
+#         docker build -t $(acrLoginServer)/frontend:latest src/frontend
+#         docker push $(acrLoginServer)/frontend:latest
+#       displayName: Build & Push Frontend
+
+#     - script: |
+#         docker build -t $(acrLoginServer)/user-api:latest src/user-api
+#         docker push $(acrLoginServer)/user-api:latest
+#       displayName: Build & Push User API
+
+#     - script: |
+#         docker build -t $(acrLoginServer)/product-api:latest src/product-api
+#         docker push $(acrLoginServer)/product-api:latest
+#       displayName: Build & Push Product API
+
+#     - script: |
+#         docker build -t $(acrLoginServer)/order-api:latest src/order-api
+#         docker push $(acrLoginServer)/order-api:latest
+#       displayName: Build & Push Order API
 
 
 # ===================================
