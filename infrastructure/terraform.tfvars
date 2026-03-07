@@ -45,3 +45,10 @@ tags = {
   Project     = "E-Commerce-Microservice"
   Owner       = "ECM-Platform-Team"
 }
+
+keyvault_name = "ecom-keyvault-dev"
+
+autoscaler_nodepool_name = "autoscale"
+
+autoscaler_min_nodes = 1
+autoscaler_max_nodes = 3
