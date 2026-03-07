@@ -68,11 +68,11 @@ module "keyvault" {
 # ---------------------------------------
 # NGINX Ingress Controller
 # ---------------------------------------
+# ---------------------------------------
+# NGINX Ingress Controller
+# ---------------------------------------
 module "ingress" {
   source = "./modules/ingress"
-
-  aks_cluster_name = var.aks_name
-  rg_name          = module.resource_group.rg_name
 
   tags = var.tags
 }
