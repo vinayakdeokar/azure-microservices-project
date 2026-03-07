@@ -117,7 +117,7 @@ stages:
       displayName: Login to ACR
       inputs:
         azureSubscription: $(azureServiceConnection)
-        scriptType: bash
+        scriptType: ps
         scriptLocation: inlineScript
         inlineScript: |
           az acr login --name $(acrName)
@@ -160,7 +160,7 @@ stages:
       displayName: Connect to AKS
       inputs:
         azureSubscription: $(azureServiceConnection)
-        scriptType: bash
+        scriptType: ps
         scriptLocation: inlineScript
         inlineScript: |
           az aks get-credentials \
