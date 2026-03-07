@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: product-api
-        image: vinayakregistry2026.azurecr.io/product-api:latest
+        image: ecomacrdev001.azurecr.io/product-api:latest
         ports:
         - containerPort: 3001
 ---
