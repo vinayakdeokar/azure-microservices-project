@@ -44,6 +44,15 @@ variable "subnet_prefix" {
   description = "Address prefix for subnet"
   type        = list(string)
 }
+variable "service_cidr" {
+  description = "AKS service CIDR"
+  type        = string
+}
+
+variable "dns_service_ip" {
+  description = "AKS DNS service IP"
+  type        = string
+}
 
 # ---------------------------------------
 # Common Tags
