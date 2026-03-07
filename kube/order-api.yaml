@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: order-api
-        image: vinayakregistry2026.azurecr.io/order-api:latest
+        image: ecomacrdev001.azurecr.io/order-api:latest
         ports:
         - containerPort: 3002
 ---
