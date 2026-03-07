@@ -24,7 +24,7 @@ prefix = "ecom"
 
 kubernetes_version = "1.33.7"
 node_count         = 1
-vm_size            = "Standard_D2as_v5"
+vm_size            = "Standard_D2ps_v6"
 
 # ===============================
 # Networking Configuration
