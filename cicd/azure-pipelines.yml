@@ -163,10 +163,7 @@ stages:
         scriptType: ps
         scriptLocation: inlineScript
         inlineScript: |
-          az aks get-credentials \
-            --resource-group ecom-rg-dev-canadacentral \
-            --name ecom-aks-cluster-dev-001 \
-            --overwrite-existing
+          az aks get-credentials --resource-group ecom-rg-dev-canadacentral --name ecom-aks-cluster-dev-001 --overwrite-existing
 
     - script: |
         kubectl apply -f kube/
