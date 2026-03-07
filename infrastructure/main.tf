@@ -51,3 +51,45 @@ module "aks" {
 
   tags = var.tags
 }
+
+# ---------------------------------------
+# Azure Key Vault
+# ---------------------------------------
+module "keyvault" {
+  source   = "./modules/keyvault"
+  rg_name  = module.resource_group.rg_name
+  location = var.location
+
+  keyvault_name = var.keyvault_name
+  tenant_id     = data.azurerm_client_config.current.tenant_id
+
+  tags = var.tags
+}
+# ---------------------------------------
+# NGINX Ingress Controller
+# ---------------------------------------
+module "ingress" {
+  source = "./modules/ingress"
+
+  aks_cluster_name = var.aks_name
+  rg_name          = module.resource_group.rg_name
+
+  tags = var.tags
+}
+# ---------------------------------------
+# AKS Autoscaler Node Pool
+# ---------------------------------------
+module "autoscaler" {
+  source = "./modules/autoscaler"
+
+  aks_cluster_id = module.aks.aks_id
+  rg_name        = module.resource_group.rg_name
+
+  nodepool_name = var.autoscaler_nodepool_name
+  vm_size       = var.vm_size
+
+  min_nodes = var.autoscaler_min_nodes
+  max_nodes = var.autoscaler_max_nodes
+
+  tags = var.tags
+}
