@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-seed
+spec:
+  template:
+    spec:
+      containers:
+      - name: mongo-seed
+        image: mongo:7
+        command:
+        - /bin/sh
+        - -c
+        - |
+          mongosh mongodb://mongodb-service:27017 <<EOF
+          use ecommerce
+          db.products.insertMany([
+            {name:"Laptop",price:50000},
+            {name:"Phone",price:20000},
+            {name:"Headphones",price:2000}
+          ])
+          EOF
+      restartPolicy: Never
+  backoffLimit: 1
