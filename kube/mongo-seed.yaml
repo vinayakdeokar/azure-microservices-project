@@ -16,8 +16,52 @@ spec:
           use ecommerce
           db.products.insertMany([
             {name:"Laptop",price:50000},
-            {name:"Phone",price:20000},
-            {name:"Headphones",price:2000}
+            {name:"Gaming Laptop",price:85000},
+            {name:"Ultrabook",price:72000},
+            {name:"MacBook Pro",price:165000},
+            {name:"Dell Workstation",price:125000},
+
+            {name:"iPhone 15",price:90000},
+            {name:"iPhone 15 Pro",price:130000},
+            {name:"Samsung Galaxy S23",price:95000},
+            {name:"Samsung Galaxy S24 Ultra",price:145000},
+            {name:"Google Pixel 8",price:80000},
+
+            {name:"Apple Watch",price:45000},
+            {name:"Apple Watch Ultra",price:89900},
+            {name:"Samsung Galaxy Watch",price:30000},
+            {name:"Noise Smartwatch",price:5000},
+            {name:"Boat Smartwatch",price:3500},
+
+            {name:"Sony Headphones",price:29990},
+            {name:"Boat Headphones",price:2500},
+            {name:"JBL Headphones",price:6000},
+            {name:"Sony Earbuds",price:7990},
+            {name:"AirPods Pro",price:24900},
+
+            {name:"Gaming Mouse",price:4500},
+            {name:"Logitech G502 Mouse",price:12495},
+            {name:"Razer Gaming Mouse",price:6500},
+            {name:"Wireless Mouse",price:1200},
+            {name:"Bluetooth Mouse",price:1800},
+
+            {name:"Mechanical Keyboard",price:7500},
+            {name:"Gaming Keyboard",price:5200},
+            {name:"Wireless Keyboard",price:3200},
+            {name:"RGB Keyboard",price:4500},
+            {name:"Office Keyboard",price:1500},
+
+            {name:"Gaming Monitor",price:25000},
+            {name:"4K Monitor",price:40000},
+            {name:"UltraWide Monitor",price:38000},
+            {name:"Curved Monitor",price:27000},
+            {name:"Budget Monitor",price:12000},
+
+            {name:"External SSD",price:9000},
+            {name:"1TB Hard Drive",price:5500},
+            {name:"Portable SSD",price:11000},
+            {name:"USB Flash Drive",price:800},
+            {name:"Gaming Controller",price:6500}
           ])
           EOF
       restartPolicy: Never
