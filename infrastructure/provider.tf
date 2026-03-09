@@ -1,5 +1,6 @@
 terraform {
   required_providers {
+
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
@@ -14,14 +15,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.0"
     }
+
   }
 
-  backend "azurerm" {
-    resource_group_name  = "tfstate-rg"
-    storage_account_name = "ecomtfstate001"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }
+  backend "azurerm" {}
 }
 
 provider "azurerm" {
@@ -35,7 +32,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = "~/.kube/config"
   }
 }
