@@ -11,7 +11,7 @@ output "resource_group_name" {
 # ---------------------------------------
 output "aks_subnet_id" {
   description = "Subnet ID used by AKS cluster"
-  value       = module.network.subnet_id
+  value       = module.network.app_subnet_id
 }
 
 # ---------------------------------------
