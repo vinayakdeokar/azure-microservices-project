@@ -15,10 +15,15 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.0"
     }
-
   }
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "ecomtfstate001"
+    container_name       = "tfstate"
+    key                  = "ecom-dev-terraform.tfstate"
+    use_azuread_auth     = true
+  }
 }
 
 provider "azurerm" {
