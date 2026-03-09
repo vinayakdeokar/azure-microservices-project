@@ -41,3 +41,8 @@ variable "dns_service_ip" {
   description = "AKS DNS service IP"
   type        = string
 }
+variable "app_gateway_id" {
+  description = "Application Gateway ID for AGIC"
+  type        = string
+}
+

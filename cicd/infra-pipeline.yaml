@@ -15,34 +15,26 @@ pool:
   name: Default
 
 variables:
-
   environment: ${{ parameters.environment }}
-
   azureServiceConnection: 'my-azure-connection'
-
   backendResourceGroup: 'tfstate-rg'
   backendStorageAccount: 'ecomtfstate001'
   backendContainer: 'tfstate'
   backendKey: 'ecom-$(environment)-terraform.tfstate'
 
 stages:
-
 - stage: Terraform
   displayName: Deploy Infrastructure
-
   jobs:
   - job: TerraformDeployment
-
     steps:
-
     - task: TerraformInstaller@0
       inputs:
         terraformVersion: latest
-
     - script: terraform fmt -check
       displayName: Terraform Format Check
       workingDirectory: infrastructure
-
+      
     - task: TerraformTaskV2@2
       displayName: Terraform Init
       inputs:

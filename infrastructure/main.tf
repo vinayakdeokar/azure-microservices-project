@@ -44,11 +44,10 @@ module "aks" {
   location       = var.location
   cluster_name   = var.aks_name
   vnet_subnet_id = module.network.app_subnet_id
-
+  app_gateway_id = module.app_gateway.app_gateway_id 
   kubernetes_version = var.kubernetes_version
   node_count         = var.node_count
   vm_size            = var.vm_size
-
   service_cidr   = var.service_cidr
   dns_service_ip = var.dns_service_ip
 
@@ -69,34 +68,29 @@ module "keyvault" {
   tags = var.tags
 }
 # ---------------------------------------
-# NGINX Ingress Controller
+# Application Gateway
 # ---------------------------------------
-# ---------------------------------------
-# NGINX Ingress Controller
-# ---------------------------------------
-module "ingress" {
-  source = "./modules/ingress"
+module "app_gateway" {
 
-  subnet_id = module.network.dmz_subnet_id
+  source = "./modules/app_gateway"
+
+  resource_group_name = module.resource_group.rg_name
+  location            = var.location
+
+  appgw_subnet_id = module.network.dmz_subnet_id
 
   tags = var.tags
-
-  depends_on = [module.aks]
 }
 # ---------------------------------------
 # AKS Autoscaler Node Pool
 # ---------------------------------------
 module "autoscaler" {
   source = "./modules/autoscaler"
-
   aks_id = module.aks.aks_id
-
   nodepool_name = var.autoscaler_nodepool_name
   vm_size       = var.vm_size
-
   min_nodes = var.autoscaler_min_nodes
   max_nodes = var.autoscaler_max_nodes
-
   tags = var.tags
 
   depends_on = [module.aks]

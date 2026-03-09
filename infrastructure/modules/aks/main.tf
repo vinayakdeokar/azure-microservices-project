@@ -12,6 +12,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vm_size        = var.vm_size
     vnet_subnet_id = var.vnet_subnet_id
   }
+  
+  ingress_application_gateway {
+    gateway_id = var.app_gateway_id
+  }
 
   identity {
     type = "SystemAssigned"
