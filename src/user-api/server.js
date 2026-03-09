@@ -8,12 +8,12 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-// तुझ्या Cluster मधल्या 'mongodb-service' ला कनेक्ट करतोय
+
 mongoose.connect('mongodb://mongodb-service:27017/ecommerce')
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Could not connect to MongoDB', err));
 
-// User Schema (डेटा कसा दिसेल)
+// User Schema 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true }
@@ -26,15 +26,15 @@ app.post('/users/register', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // युजर आधीच आहे का ते तपासा
+        
         let user = await User.findOne({ username });
         if (user) return res.status(400).json({ error: "User already exists" });
 
-        // पासवर्ड Encrypt करा (सुरक्षेसाठी)
+        
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // नवीन युजर सेव्ह करा
+        
         user = new User({ username, password: hashedPassword });
         await user.save();
 
@@ -48,16 +48,16 @@ app.post('/users/register', async (req, res) => {
 app.post('/users/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        console.log(`Login attempt: ${username}`); // टर्मिनलमध्ये दिसेल
+        console.log(`Login attempt: ${username}`); 
 
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(400).json({ error: "युजर मिळाला नाही!" });
         }
 
-        // पासवर्ड चेक करणे
+        
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log(`Password Match Status: ${isMatch}`); // हे महत्वाचे आहे
+        console.log(`Password Match Status: ${isMatch}`); 
 
         if (!isMatch) {
             return res.status(400).json({ error: "पासवर्ड चुकीचा आहे!" });
