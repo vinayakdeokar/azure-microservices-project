@@ -1,3 +1,13 @@
+parameters:
+- name: environment
+  displayName: Select Environment
+  type: string
+  default: dev
+  values:
+  - dev
+  - qa
+  - uat
+
 trigger:
 - main
 
@@ -7,8 +17,9 @@ pool:
 variables:
 
   azureServiceConnection: 'my-azure-connection'
-  acrName: 'ecomacrdev001'
-  acrLoginServer: 'ecomacrdev001.azurecr.io'
+  environment: ${{ parameters.environment }}
+  acrName: 'ecomacr$(environment)001'
+  acrLoginServer: 'ecomacr$(environment)001.azurecr.io'
 
 stages:
 
