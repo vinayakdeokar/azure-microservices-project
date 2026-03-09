@@ -3,222 +3,356 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vinayak Store | Official Amazon Edition</title>
-
+<title>Vinayak Store | Official</title>
 <style>
-
 /* Amazon Theme */
+body{ font-family:'Segoe UI',Arial; margin:0; background:#f3f3f3; }
+header{ background:#131921; padding:10px 30px; display:flex; flex-direction:column; gap:10px; color: white;}
+.header-main{ display:flex; justify-content:space-between; align-items:center; }
+h1{ margin:0; font-size:24px; color:#ff9900; }
+.search-box{ display:flex; flex:1; margin:0 40px; }
+.search-box input{ width:100%; padding:10px; border:none; border-radius:4px 0 0 4px; }
+.search-box button{ background:#febd69; border:none; padding:10px 20px; border-radius:0 4px 4px 0; cursor:pointer; }
+.nav-links { display:flex; gap:15px; align-items:center;}
+.nav-links button{ background:none; border:1px solid #fff; color:white; padding:8px 15px; cursor:pointer; border-radius:4px; }
+.nav-links .cart-btn { background:#ff9900; color:#131921; font-weight:bold; border:none; }
+.container{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:25px; padding:40px; max-width:1400px; margin:auto; }
+.card{ background:white; padding:20px; border-radius:8px; border:1px solid #ddd; display:flex; flex-direction:column; }
+.card img{ width:100%; height:200px; object-fit:contain; margin-bottom:15px; }
+.card h3{ font-size:18px; margin:0 0 10px; color:#007185; }
+.rating{ color:#ffa41c; font-size:14px; margin-bottom:8px; }
+.price{ font-size:24px; font-weight:bold; margin-bottom:15px; }
+.buy-btn{ padding:10px; background:#ffd814; border:1px solid #fcd200; border-radius:20px; cursor:pointer; }
+.buy-btn:hover{ background:#f7ca00; }
 
-body{
-font-family:'Segoe UI',Arial;
-margin:0;
-background:#f3f3f3;
-}
-
-/* Header */
-
-header{
-background:#131921;
-padding:10px 30px;
-display:flex;
-flex-direction:column;
-gap:10px;
-}
-
-.header-main{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-h1{
-margin:0;
-font-size:24px;
-color:#ff9900;
-}
-
-.search-box{
-display:flex;
-flex:1;
-margin:0 40px;
-}
-
-.search-box input{
-width:100%;
-padding:10px;
-border:none;
-border-radius:4px 0 0 4px;
-}
-
-.search-box button{
-background:#febd69;
-border:none;
-padding:10px 20px;
-border-radius:0 4px 4px 0;
-cursor:pointer;
-}
-
-.nav-links button{
-background:none;
-border:1px solid #fff;
-color:white;
-padding:8px 15px;
-cursor:pointer;
-border-radius:4px;
-}
-
-/* Products */
-
-.container{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-gap:25px;
-padding:40px;
-max-width:1400px;
-margin:auto;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:8px;
-border:1px solid #ddd;
-display:flex;
-flex-direction:column;
-}
-
-.card img{
-width:100%;
-height:200px;
-object-fit:contain;
-margin-bottom:15px;
-}
-
-.card h3{
-font-size:18px;
-margin:0 0 10px;
-color:#007185;
-}
-
-.rating{
-color:#ffa41c;
-font-size:14px;
-margin-bottom:8px;
-}
-
-.price{
-font-size:24px;
-font-weight:bold;
-margin-bottom:15px;
-}
-
-.buy-btn{
-padding:10px;
-background:#ffd814;
-border:1px solid #fcd200;
-border-radius:20px;
-cursor:pointer;
-}
-
-.buy-btn:hover{
-background:#f7ca00;
-}
-
+/* Modal Styles */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { background: white; padding: 30px; border-radius: 8px; width: 400px; max-width: 90%; max-height: 80vh; overflow-y: auto;}
+.modal-content h2 { margin-top:0; color: #111; }
+.modal-content input, .modal-content select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+.modal-content button { width: 100%; padding: 10px; background: #ffd814; border: 1px solid #fcd200; border-radius: 4px; cursor: pointer; font-weight:bold; margin-top:10px;}
+.close-btn { background: #eee !important; border: 1px solid #ccc !important; margin-top: 5px !important;}
+.cart-item { display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:10px 0; color: #333;}
+.order-card { background:#fff; padding:15px; border:1px solid #ddd; margin-bottom:15px; border-radius:4px; color: #111; }
 </style>
 </head>
-
 <body>
 
 <header>
-
 <div class="header-main">
-
-<h1>Vinayak.store</h1>
-
-<div class="search-box">
-<input type="text" id="search-input" placeholder="Search Electronics, Laptops, Phones..." onkeyup="filterItems()">
-<button>🔍</button>
+    <h1>Vinayak.store</h1>
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search Electronics, Laptops, Phones..." onkeyup="filterItems()">
+        <button>🔍</button>
+    </div>
+    <div class="nav-links" id="nav-container">
+        <!-- Injected via JS -->
+    </div>
 </div>
-
-<div class="nav-links">
-<button>Register</button>
-<button>Sign In</button>
-</div>
-
-</div>
-
 </header>
 
 <div class="container" id="product-container"></div>
 
-<script>
-
-let allProducts=[];
-
-/* Render Products */
-
-function showItems(list){
-
-const container=document.getElementById("product-container");
-
-container.innerHTML=list.map(p=>`
-
-<div class="card">
-<img src="${p.img}">
-<h3>${p.name}</h3>
-<div class="rating">${p.stars}</div>
-<div class="price">₹${p.price.toLocaleString()}</div>
-<button class="buy-btn">Buy Now</button>
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <h2>Sign In</h2>
+        <input type="text" id="loginUsername" placeholder="Username">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button class="close-btn" onclick="closeModal('loginModal')">Cancel</button>
+    </div>
 </div>
 
-`).join("");
+<!-- Register Modal -->
+<div class="modal" id="registerModal">
+    <div class="modal-content">
+        <h2>Create Account</h2>
+        <input type="text" id="regUsername" placeholder="Username">
+        <input type="email" id="regEmail" placeholder="Email">
+        <input type="password" id="regPassword" placeholder="Password">
+        <button onclick="register()">Register</button>
+        <button class="close-btn" onclick="closeModal('registerModal')">Cancel</button>
+    </div>
+</div>
 
+<!-- Cart & Checkout Modal -->
+<div class="modal" id="cartModal">
+    <div class="modal-content">
+        <h2>My Cart</h2>
+        <div id="cartItems"></div>
+        <h3 id="cartTotal" style="color:#B12704; margin-top:15px;">Total: ₹0</h3>
+        <hr>
+        <h3>Checkout Details</h3>
+        <input type="text" id="address" placeholder="Delivery Address / Pin Code">
+        <select id="paymentMethod" onchange="togglePaymentUI()">
+            <option value="COD">Cash on Delivery</option>
+            <option value="RAZORPAY">Razorpay / Card / UPI</option>
+        </select>
+        
+        <div id="paymentUI" style="display:none; text-align:center; padding:10px; border:1px dashed #ccc; margin-bottom:10px;">
+            <p><strong>Scan QR Code to Pay</strong></p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=vinayakstorepayment" alt="QR Code">
+            <p><small style="color:#888;">Simulated Razorpay Gateway</small></p>
+        </div>
+
+        <button onclick="placeOrder()">Place Order</button>
+        <button class="close-btn" onclick="closeModal('cartModal')">Close Cart</button>
+    </div>
+</div>
+
+<!-- Orders Modal -->
+<div class="modal" id="ordersModal">
+    <div class="modal-content" style="width: 600px;">
+        <h2>My Orders</h2>
+        <div id="ordersList">Loading...</div>
+        <button class="close-btn" onclick="closeModal('ordersModal')">Close</button>
+    </div>
+</div>
+
+<script>
+let allProducts = [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let currentUser = localStorage.getItem('username') || null;
+
+// --- INITIALIZATION ---
+window.onload = () => {
+    loadProducts();
+    updateNavUI();
+};
+
+function updateNavUI() {
+    const nav = document.getElementById("nav-container");
+    if(currentUser) {
+        nav.innerHTML = `
+            <span>Hi, ${currentUser}!</span>
+            <button onclick="openModal('ordersModal'); loadMyOrders();">My Orders</button>
+            <button class="cart-btn" onclick="openCart()">Cart (${cart.length})</button>
+            <button onclick="logout()">Logout</button>
+        `;
+    } else {
+        nav.innerHTML = `
+            <button onclick="openModal('registerModal')">Register</button>
+            <button onclick="openModal('loginModal')">Sign In</button>
+            <button class="cart-btn" onclick="openCart()">Cart (${cart.length})</button>
+        `;
+    }
 }
 
-/* Search */
+// --- PRODUCTS ---
+async function loadProducts(){
+    try {
+        const res = await fetch("/products");
+        const data = await res.json();
+        allProducts = data.map((p,i)=>({
+            id: i, name: p.name, price: p.price, img: p.image, stars: "⭐⭐⭐⭐"
+        }));
+        showItems(allProducts);
+    } catch(err) {
+        console.log("API error:", err);
+        document.getElementById("product-container").innerHTML = "<h3 style='grid-column:1/-1; text-align:center;'>Loading products... (Please ensure backend APIs are running).</h3>";
+    }
+}
+
+function showItems(list){
+    const container = document.getElementById("product-container");
+    container.innerHTML = list.map(p => `
+        <div class="card">
+            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+            <h3>${p.name}</h3>
+            <div class="rating">${p.stars}</div>
+            <div class="price">₹${p.price.toLocaleString()}</div>
+            <button class="buy-btn" onclick="addToCart(${p.id})">Add to Cart</button>
+        </div>
+    `).join("");
+}
 
 function filterItems(){
-
-const query=document.getElementById("search-input").value.toLowerCase();
-
-const filtered=allProducts.filter(p=>
-p.name.toLowerCase().includes(query)
-);
-
-showItems(filtered);
-
+    const query = document.getElementById("search-input").value.toLowerCase();
+    showItems(allProducts.filter(p => p.name.toLowerCase().includes(query)));
 }
 
-/* Load MongoDB Products */
-
-async function loadProducts(){
-
-try{
-
-const res=await fetch("/products");
-
-const data=await res.json();
-
-allProducts=data.map((p,i)=>({
-id:i,
-name:p.name,
-price:p.price,
-img:p.image,
-stars:"⭐⭐⭐⭐"
-}));
-
-showItems(allProducts);
-
-}catch(err){
-
-console.log("API error:",err);
-
+// --- CART ---
+function addToCart(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateNavUI();
+    alert(product.name + " added to cart!");
 }
 
+function openCart() {
+    openModal('cartModal');
+    const cartItemsDiv = document.getElementById('cartItems');
+    let total = 0;
+    
+    if (cart.length === 0) {
+        cartItemsDiv.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+        cartItemsDiv.innerHTML = cart.map((p, index) => {
+            total += p.price;
+            return `<div class="cart-item">
+                <span>${p.name}</span>
+                <span>₹${p.price.toLocaleString()} <button style="width:auto; padding:2px 6px; margin:0 0 0 10px; font-size:10px; background:#ffebeb; border:1px solid #ffcccc; border-radius:3px; cursor:pointer;" onclick="removeFromCart(${index})">X</button></span>
+            </div>`;
+        }).join("");
+    }
+    document.getElementById('cartTotal').innerText = `Total: ₹${total.toLocaleString()}`;
 }
 
-window.onload=loadProducts;
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateNavUI();
+    openCart(); // refresh UI
+}
 
+function togglePaymentUI() {
+    const method = document.getElementById("paymentMethod").value;
+    document.getElementById("paymentUI").style.display = (method === 'RAZORPAY') ? 'block' : 'none';
+}
+
+// --- AUTHENTICATION ---
+async function register() {
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    
+    if(!username || !password) return alert("Username and Password required!");
+
+    try {
+        const res = await fetch("/users/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username, email, password})
+        });
+        const data = await res.json();
+        if(res.ok) {
+            alert("Registration successful! You can now sign in.");
+            closeModal('registerModal');
+            openModal('loginModal');
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch(err) { alert("Registration request failed."); }
+}
+
+async function login() {
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const res = await fetch("/users/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username, password})
+        });
+        const data = await res.json();
+        if(res.ok) {
+            alert("Welcome back, " + username + "!");
+            currentUser = username;
+            localStorage.setItem("username", username);
+            updateNavUI();
+            closeModal('loginModal');
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch(err) { alert("Login connection failed."); }
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem("username");
+    updateNavUI();
+    alert("You have safely logged out.");
+}
+
+// --- ORDERS ---
+async function placeOrder() {
+    if(!currentUser) {
+        alert("Please Sign In or Register first to place an order.");
+        closeModal('cartModal');
+        openModal('loginModal');
+        return;
+    }
+    if(cart.length === 0) return alert("Your cart is empty! Add products to checkout.");
+    
+    const address = document.getElementById("address").value;
+    if(!address) return alert("Please enter your precise delivery address.");
+
+    const method = document.getElementById("paymentMethod").value;
+    const total = cart.reduce((sum, p) => sum + p.price, 0);
+
+    const orderData = {
+        username: currentUser,
+        items: cart,
+        total: total,
+        paymentMethod: method,
+        address: address,
+        status: (method === 'RAZORPAY') ? 'Paid Online ✅' : 'Pending COD 🚚'
+    };
+
+    try {
+        if(method === 'RAZORPAY') {
+            alert("Processing Razorpay transaction securely...");
+        }
+        
+        const res = await fetch("/order", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(orderData)
+        });
+        
+        if(res.ok) {
+            alert(`Order placed successfully! Total Paid: ₹${total.toLocaleString()}`);
+            cart = []; 
+            localStorage.removeItem('cart');
+            updateNavUI();
+            closeModal('cartModal');
+            openModal('ordersModal');
+            loadMyOrders();
+        } else {
+            alert("Failed to create order on server.");
+        }
+    } catch(err) {
+        alert("Server communication error while placing order.");
+    }
+}
+
+async function loadMyOrders() {
+    if(!currentUser) return;
+    const list = document.getElementById('ordersList');
+    list.innerHTML = "<p>Securely fetching your orders...</p>";
+    
+    try {
+        const res = await fetch(`/order/${currentUser}`);
+        const orders = await res.json();
+        
+        if(!orders || orders.length === 0) {
+            list.innerHTML = "<p>No past orders found. Start shopping!</p>";
+            return;
+        }
+
+        list.innerHTML = orders.map(o => `
+            <div class="order-card">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                    <span style="font-size:12px; color:#555;">Order ID: #${o._id ? o._id.substring(8, 16) : 'N/A'}</span>
+                    <span style="background:#e8f0fe; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; color:#1a73e8;">${o.status || 'Received'}</span>
+                </div>
+                <div style="font-size:14px;"><strong>Items: </strong>${o.items.map(i => i.name).join(", ")}</div>
+                <div style="font-size:14px; margin-top:5px;"><strong>Deliver to: </strong>${o.address}</div>
+                <div style="margin-top:10px; font-size:16px; color:#B12704; font-weight:bold;">Total: ₹${o.total.toLocaleString()} (${o.paymentMethod})</div>
+                <div style="font-size:12px; color:#888; margin-top:5px; text-align:right;">Date: ${new Date(o.date).toLocaleString()}</div>
+            </div>
+        `).join("");
+    } catch(err) {
+        list.innerHTML = "<p>Failed to load orders from network.</p>";
+    }
+}
+
+// --- MODAL UTILS ---
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 </script>
 
 </body>

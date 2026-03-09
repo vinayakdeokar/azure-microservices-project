@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 // --- १. Registration API ---
-app.post('/register', async (req, res) => {
+app.post('/users/register', async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -45,7 +45,7 @@ app.post('/register', async (req, res) => {
 });
 
 // --- २. Login API ---
-app.post('/login', async (req, res) => {
+app.post('/users/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         console.log(`Login attempt: ${username}`); // टर्मिनलमध्ये दिसेल
