@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: ecommerce-ingress
 spec:
-  ingressClassName: nginx
+  ingressClassName: azure-application-gateway
   rules:
   - http:
       paths:
