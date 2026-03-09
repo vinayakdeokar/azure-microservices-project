@@ -1,259 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinayak Store | Official Amazon Edition</title>
-    <style>
-        /* Amazon Professional Theme */
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            margin: 0; 
-            background-color: #f3f3f3; 
-            color: #111;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinayak Store | Official Amazon Edition</title>
 
-        /* Navigation Header */
-        header { 
-            background-color: #131921; 
-            padding: 10px 30px; 
-            display: flex; 
-            flex-direction: column;
-            gap: 10px;
-            position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
+<style>
 
-        .header-main { display: flex; justify-content: space-between; align-items: center; }
-        
-        h1 { margin: 0; font-size: 24px; color: #ff9900; font-weight: bold; cursor: pointer; }
+/* Amazon Theme */
 
-        /* Search Bar */
-        .search-box { display: flex; flex: 1; margin: 0 40px; }
-        .search-box input { 
-            width: 100%; padding: 10px 15px; border: none; 
-            border-radius: 4px 0 0 4px; font-size: 16px; outline: none;
-        }
-        .search-box button { 
-            background-color: #febd69; border: none; padding: 0 20px; 
-            border-radius: 0 4px 4px 0; cursor: pointer; font-size: 18px;
-        }
-        .search-box button:hover { background-color: #f3a847; }
+body{
+font-family:'Segoe UI',Arial;
+margin:0;
+background:#f3f3f3;
+}
 
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-links button { 
-            background: none; border: 1px solid #fff; color: white;
-            padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 14px;
-        }
-        .nav-links button:hover { background-color: rgba(255,255,255,0.1); }
+/* Header */
 
-        /* Product Grid */
-        .container { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; padding: 40px; max-width: 1400px; margin: 0 auto;
-        }
+header{
+background:#131921;
+padding:10px 30px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
 
-        .card { 
-            background: white; padding: 20px; border-radius: 8px; 
-            display: flex; flex-direction: column; justify-content: space-between;
-            transition: 0.3s; border: 1px solid #ddd;
-        }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        
-        .card img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; }
-        .card h3 { font-size: 18px; margin: 0 0 10px 0; color: #007185; height: 50px; overflow: hidden; }
-        .card .rating { color: #ffa41c; font-size: 14px; margin-bottom: 8px; }
-        .card .price { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 15px; }
+.header-main{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
 
-        .buy-btn { 
-            width: 100%; padding: 10px; background: #ffd814; border: 1px solid #fcd200;
-            border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;
-        }
-        .buy-btn:hover { background: #f7ca00; }
+h1{
+margin:0;
+font-size:24px;
+color:#ff9900;
+}
 
-        /* Modern Modals */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { 
-            background: white; margin: 8% auto; padding: 30px; width: 360px; 
-            border-radius: 10px; color: #333; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .close-btn { position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 28px; color: #888; }
-        
-        input[type="text"], input[type="password"], textarea, select { 
-            width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #a6a6a6; 
-            border-radius: 4px; box-sizing: border-box; font-size: 14px;
-        }
-    </style>
+.search-box{
+display:flex;
+flex:1;
+margin:0 40px;
+}
+
+.search-box input{
+width:100%;
+padding:10px;
+border:none;
+border-radius:4px 0 0 4px;
+}
+
+.search-box button{
+background:#febd69;
+border:none;
+padding:10px 20px;
+border-radius:0 4px 4px 0;
+cursor:pointer;
+}
+
+.nav-links button{
+background:none;
+border:1px solid #fff;
+color:white;
+padding:8px 15px;
+cursor:pointer;
+border-radius:4px;
+}
+
+/* Products */
+
+.container{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:25px;
+padding:40px;
+max-width:1400px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:8px;
+border:1px solid #ddd;
+display:flex;
+flex-direction:column;
+}
+
+.card img{
+width:100%;
+height:200px;
+object-fit:contain;
+margin-bottom:15px;
+}
+
+.card h3{
+font-size:18px;
+margin:0 0 10px;
+color:#007185;
+}
+
+.rating{
+color:#ffa41c;
+font-size:14px;
+margin-bottom:8px;
+}
+
+.price{
+font-size:24px;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.buy-btn{
+padding:10px;
+background:#ffd814;
+border:1px solid #fcd200;
+border-radius:20px;
+cursor:pointer;
+}
+
+.buy-btn:hover{
+background:#f7ca00;
+}
+
+</style>
 </head>
+
 <body>
 
 <header>
-    <div class="header-main">
-        <h1 onclick="location.reload()">Vinayak.store</h1>
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="Search Electronics, Laptops, Phones..." onkeyup="filterItems()">
-            <button>🔍</button>
-        </div>
-        <div id="auth-section" class="nav-links">
-            <button onclick="openModal('reg-modal')">Register</button>
-            <button onclick="openModal('login-modal')">Sign In</button>
-        </div>
-    </div>
+
+<div class="header-main">
+
+<h1>Vinayak.store</h1>
+
+<div class="search-box">
+<input type="text" id="search-input" placeholder="Search Electronics, Laptops, Phones..." onkeyup="filterItems()">
+<button>🔍</button>
+</div>
+
+<div class="nav-links">
+<button>Register</button>
+<button>Sign In</button>
+</div>
+
+</div>
+
 </header>
 
-<div class="container" id="product-container">
-    </div>
-
-<div id="login-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
-        <h2 style="text-align: center;">Sign In</h2>
-        <input type="text" id="login-user" placeholder="Username">
-        <input type="password" id="login-pass" placeholder="Password">
-        <button class="buy-btn" onclick="handleAuth('login')">Sign In</button>
-    </div>
-</div>
-
-<div id="reg-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('reg-modal')">&times;</span>
-        <h2 style="text-align: center;">Create Account</h2>
-        <input type="text" id="reg-user" placeholder="Choose Username">
-        <input type="password" id="reg-pass" placeholder="Set Password">
-        <button class="buy-btn" onclick="handleAuth('register')">Create Account</button>
-    </div>
-</div>
-
-<div id="checkout-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('checkout-modal')">&times;</span>
-        <h2 id="check-name" style="color: #007185;">Checkout</h2>
-        <p id="check-price" style="font-weight: bold;"></p>
-        <hr>
-        <input type="text" id="cust-name" placeholder="Full Name">
-        <textarea id="cust-addr" rows="3" placeholder="Full Shipping Address"></textarea>
-        <select id="pay-mode">
-            <option value="upi">UPI (GPay / PhonePe)</option>
-            <option value="cod">Cash on Delivery</option>
-            <option value="card">Credit / Debit Card</option>
-        </select>
-        <button class="buy-btn" style="background: #ffa41c;" onclick="placeOrder()">Place Your Order</button>
-    </div>
-</div>
-
-<div id="history-modal" class="modal">
-    <div class="modal-content" style="width: 450px;">
-        <span class="close-btn" onclick="closeModal('history-modal')">&times;</span>
-        <h2 style="text-align: center;">Your Order History</h2>
-        <div id="order-log"></div>
-    </div>
-</div>
+<div class="container" id="product-container"></div>
 
 <script>
-    const API_URL = "http://vinayak-api-dev.canadacentral.cloudapp.azure.com";
-    let loggedUser = null;
-    let selectedItem = {};
 
-    // 1. All Product Objects
-    const allProducts = [
-        { id: 1, name: "Dell Precision 16 - Workstation Laptop", price: 125000, img: "images/dell_16.jpg", stars: "⭐⭐⭐⭐ (2.4k)" },
-        { id: 2, name: "iPhone 17 Pro Max - 512GB Blue Titanium", price: 165000, img: "images/iphone 17 pro max.jpg", stars: "⭐⭐⭐⭐⭐ (15k)" },
-        { id: 3, name: "Samsung Galaxy S26 Ultra - 5G AI Phone", price: 145000, img: "images/s26 ulta.jpg", stars: "⭐⭐⭐⭐⭐ (9k)" },
-        { id: 4, name: "Sony WH-1000XM5 Noise Canceling Headphones", price: 29990, img: "https://m.media-amazon.com/images/I/51SKmu2G9FL._AC_SL1500_.jpg", stars: "⭐⭐⭐⭐ (22k)" },
-        { id: 5, name: "Apple Watch Ultra 3 - GPS + Cellular", price: 89900, img: "https://m.media-amazon.com/images/I/81O0EunW42L._AC_SL1500_.jpg", stars: "⭐⭐⭐⭐⭐ (5k)" },
-        { id: 6, name: "Logitech G502 Hero Gaming Mouse", price: 12495, img: "https://m.media-amazon.com/images/I/51gwS9p8u9L._AC_SL1500_.jpg", stars: "⭐⭐⭐⭐ (31k)" }
-    ];
+let allProducts=[];
 
-    function showItems(list) {
-        document.getElementById('product-container').innerHTML = list.map(p => `
-            <div class="card">
-                <img src="${p.img}" alt="product">
-                <h3>${p.name}</h3>
-                <div class="rating">${p.stars}</div>
-                <div class="price">₹${p.price.toLocaleString()}</div>
-                <button class="buy-btn" onclick="startBuy('${p.name}', ${p.price})">Buy Now</button>
-            </div>
-        `).join('');
-    }
+/* Render Products */
 
-    function filterItems() {
-        const query = document.getElementById('search-input').value.toLowerCase();
-        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
-        showItems(filtered);
-    }
+function showItems(list){
 
-    function openModal(id) { document.getElementById(id).style.display = 'block'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+const container=document.getElementById("product-container");
 
-    async function handleAuth(type) {
-        const user = document.getElementById(type === 'login' ? 'login-user' : 'reg-user').value.trim();
-        const pass = document.getElementById(type === 'login' ? 'login-pass' : 'reg-pass').value;
-        if(!user || !pass) return alert("Please fill all fields!");
+container.innerHTML=list.map(p=>`
 
-        try {
-            const res = await fetch(`${API_URL}/${type}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user, password: pass })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                alert(data.message);
-                if (type === 'register') { 
-                    closeModal('reg-modal'); 
-                    openModal('login-modal'); 
-                } else { 
-                    loggedUser = user; 
-                    setUI(user); 
-                    closeModal('login-modal'); 
-                }
-            } else { alert("Error: " + data.error); }
-        } catch (e) { alert("Backend Error!"); }
-    }
+<div class="card">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<div class="rating">${p.stars}</div>
+<div class="price">₹${p.price.toLocaleString()}</div>
+<button class="buy-btn">Buy Now</button>
+</div>
 
-    function setUI(username) {
-        document.getElementById('auth-section').innerHTML = `
-            <span style="color:#ff9900; font-weight:bold;">Hello, ${username}</span>
-            <button onclick="viewOrders()">My Orders</button>
-            <button onclick="location.reload()" style="border-color:#ff4444; color:#ff4444;">Logout</button>`;
-    }
+`).join("");
 
-    function startBuy(name, price) {
-        if(!loggedUser) { alert("Please login first!"); return openModal('login-modal'); }
-        selectedItem = { name, price };
-        document.getElementById('check-name').innerText = name;
-        document.getElementById('check-price').innerText = "Deal: ₹" + price.toLocaleString();
-        openModal('checkout-modal');
-    }
+}
 
-    function placeOrder() {
-        const name = document.getElementById('cust-name').value;
-        const addr = document.getElementById('cust-addr').value;
-        if(!name || !addr) return alert("Please enter shipping details!");
+/* Search */
 
-        let logs = JSON.parse(localStorage.getItem('user_orders')) || [];
-        logs.push({ user: loggedUser, item: selectedItem.name, cost: selectedItem.price, date: new Date().toLocaleDateString() });
-        localStorage.setItem('user_orders', JSON.stringify(logs));
+function filterItems(){
 
-        alert("Thank you " + name + "! Order placed successfully.");
-        closeModal('checkout-modal');
-    }
+const query=document.getElementById("search-input").value.toLowerCase();
 
-    function viewOrders() {
-        let logs = JSON.parse(localStorage.getItem('user_orders')) || [];
-        let myLogs = logs.filter(l => l.user === loggedUser);
-        document.getElementById('order-log').innerHTML = myLogs.map(l => `
-            <div style="border-bottom:1px solid #eee; padding:12px 0;">
-                <b style="color:#007185;">${l.item}</b><br>
-                <span>Total: ₹${l.cost.toLocaleString()}</span> | <i>${l.date}</i>
-            </div>
-        `).join('') || "<p style='text-align:center;'>No orders found.</p>";
-        openModal('history-modal');
-    }
+const filtered=allProducts.filter(p=>
+p.name.toLowerCase().includes(query)
+);
 
-    // Initial Display
-    showItems(allProducts);
+showItems(filtered);
+
+}
+
+/* Load MongoDB Products */
+
+async function loadProducts(){
+
+try{
+
+const res=await fetch("/products");
+
+const data=await res.json();
+
+allProducts=data.map((p,i)=>({
+id:i,
+name:p.name,
+price:p.price,
+img:p.image,
+stars:"⭐⭐⭐⭐"
+}));
+
+showItems(allProducts);
+
+}catch(err){
+
+console.log("API error:",err);
+
+}
+
+}
+
+window.onload=loadProducts;
+
 </script>
+
 </body>
 </html>

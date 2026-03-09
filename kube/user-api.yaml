@@ -23,9 +23,9 @@ kind: Service
 metadata:
   name: user-api-service
 spec:
-  type: LoadBalancer 
+  type: ClusterIP
+  selector:
+    app: user-api
   ports:
   - port: 80
     targetPort: 3000
-  selector:
-    app: user-api
