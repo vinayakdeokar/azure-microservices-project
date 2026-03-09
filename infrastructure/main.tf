@@ -12,13 +12,16 @@ module "resource_group" {
 # Virtual Network Module
 # ---------------------------------------
 module "network" {
-  source                = "./modules/vnet"
-  rg_name               = module.resource_group.rg_name
-  location              = var.location
-  prefix                = var.prefix
-  vnet_address_space    = var.vnet_space
-  subnet_address_prefix = var.subnet_prefix
-  tags                  = var.tags
+
+  source             = "./modules/vnet"
+  rg_name            = module.resource_group.rg_name
+  location           = var.location
+  prefix             = var.prefix
+  vnet_address_space = var.vnet_address_space
+
+  subnets = var.subnets
+
+  tags = var.tags
 }
 
 # ---------------------------------------
@@ -40,7 +43,7 @@ module "aks" {
   rg_name        = module.resource_group.rg_name
   location       = var.location
   cluster_name   = var.aks_name
-  vnet_subnet_id = module.network.subnet_id
+  vnet_subnet_id = module.network.app_subnet_id
 
   kubernetes_version = var.kubernetes_version
   node_count         = var.node_count
@@ -74,7 +77,11 @@ module "keyvault" {
 module "ingress" {
   source = "./modules/ingress"
 
+  subnet_id = module.network.dmz_subnet_id
+
   tags = var.tags
+
+  depends_on = [module.aks]
 }
 # ---------------------------------------
 # AKS Autoscaler Node Pool
@@ -91,4 +98,6 @@ module "autoscaler" {
   max_nodes = var.autoscaler_max_nodes
 
   tags = var.tags
+
+  depends_on = [module.aks]
 }

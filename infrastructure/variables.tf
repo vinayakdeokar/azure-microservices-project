@@ -53,6 +53,14 @@ variable "dns_service_ip" {
   description = "AKS DNS service IP"
   type        = string
 }
+variable "subnets" {
+  description = "VNet subnets"
+  type        = map(string)
+}
+variable "vnet_address_space" {
+  description = "Address space for the Virtual Network"
+  type        = list(string)
+}
 
 # ---------------------------------------
 # Common Tags

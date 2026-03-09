@@ -8,10 +8,13 @@ resource "azurerm_virtual_network" "vnet" {
   tags = var.tags
 }
 
-resource "azurerm_subnet" "subnet" {
-  name                 = "${var.prefix}-aks-subnet"
+resource "azurerm_subnet" "subnets" {
+
+  for_each = var.subnets
+
+  name                 = each.key
   resource_group_name  = var.rg_name
   virtual_network_name = azurerm_virtual_network.vnet.name
 
-  address_prefixes = var.subnet_address_prefix
+  address_prefixes = [each.value]
 }

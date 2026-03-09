@@ -1,181 +1,196 @@
-trigger: none
-pr: none
+# parameters:
+# - name: environment
+#   displayName: Select Environment
+#   type: string
+#   default: dev
+#   values:
+#   - dev
+#   - qa
+#   - uat
+# trigger: none
+# pr: none
 
-pool:
-  name: Default
+# pool:
+#   name: Default
 
-variables:
+# variables:
 
-  # ---------------------------------------
-  # Azure Service Connection
-  # ---------------------------------------
-  azureServiceConnection: 'my-azure-connection'
+#   environment: ${{ parameters.environment }}
 
-  # ---------------------------------------
-  # Terraform Remote Backend
-  # ---------------------------------------
-  backendResourceGroup: 'tfstate-rg'
-  backendStorageAccount: 'ecomtfstate001'
-  backendContainer: 'tfstate'
-  backendKey: 'ecom-dev-terraform.tfstate'
+#   # ---------------------------------------
+#   # Azure Service Connection
+#   # ---------------------------------------
+#   azureServiceConnection: 'my-azure-connection'
 
-  acrName: 'ecomacrdev001'
-  acrLoginServer: 'ecomacrdev001.azurecr.io'
+#   # ---------------------------------------
+#   # Terraform Remote Backend
+#   # ---------------------------------------
+#   backendResourceGroup: 'tfstate-rg'
+#   backendStorageAccount: 'ecomtfstate001'
+#   backendContainer: 'tfstate'
+#   backendKey: 'ecom-$(environment)-terraform.tfstate'
 
-  # ---------------------------------------
-  # ACR & AKS Connections (Future Stages)
-  # ---------------------------------------
-  acrServiceConnection: 'my-azure-connection'
-  aksServiceConnection: 'my-azure-connection'
+#   # ---------------------------------------
+#   # ACR
+#   # ---------------------------------------
+#   acrName: ecomacr$(environment)001
+#   acrLoginServer: ecomacr$(environment)001.azurecr.io
 
-  # ---------------------------------------
-  # ACR Login Server
-  # ---------------------------------------
-  # acrHost: 'ecomacrdev001.azurecr.io'
+#   # ---------------------------------------
+#   # ACR & AKS Connections (Future Stages)
+#   # ---------------------------------------
+#   acrServiceConnection: 'my-azure-connection'
+#   aksServiceConnection: 'my-azure-connection'
 
-stages:
+#   # ---------------------------------------
+#   # ACR Login Server
+#   # ---------------------------------------
+#   # acrHost: 'ecomacrdev001.azurecr.io'
 
-# =======================================
-# STAGE 1: TERRAFORM INFRASTRUCTURE
-# =======================================
-- stage: Infrastructure
-  displayName: 'Step 1: Deploy Azure Infrastructure'
+# stages:
 
-  jobs:
-  - job: Terraform
-    displayName: 'Terraform Deployment'
+# # =======================================
+# # STAGE 1: TERRAFORM INFRASTRUCTURE
+# # =======================================
+# - stage: Infrastructure
+#   displayName: 'Step 1: Deploy Azure Infrastructure'
 
-    steps:
+#   jobs:
+#   - job: Terraform
+#     displayName: 'Terraform Deployment'
 
-    # Install Terraform
-    - task: TerraformInstaller@0
-      displayName: 'Install Terraform'
-      inputs:
-        terraformVersion: 'latest'
+#     steps:
 
-    # Terraform Format Check
-    - script: terraform fmt -check
-      displayName: 'Terraform Format Check'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
+#     # Install Terraform
+#     - task: TerraformInstaller@0
+#       displayName: 'Install Terraform'
+#       inputs:
+#         terraformVersion: 'latest'
 
-    # Terraform Init
-    - task: TerraformTaskV2@2
-      displayName: 'Terraform Init'
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
-        backendServiceArm: '$(azureServiceConnection)'
-        backendAzureRmResourceGroupName: '$(backendResourceGroup)'
-        backendAzureRmStorageAccountName: '$(backendStorageAccount)'
-        backendAzureRmContainerName: '$(backendContainer)'
-        backendAzureRmKey: '$(backendKey)'
+#     # Terraform Format Check
+#     - script: terraform fmt -check
+#       displayName: 'Terraform Format Check'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
 
-    # Terraform Validate
-    - script: terraform validate
-      displayName: 'Terraform Validate'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
+#     # Terraform Init
+#     - task: TerraformTaskV2@2
+#       displayName: 'Terraform Init'
+#       inputs:
+#         provider: 'azurerm'
+#         command: 'init'
+#         workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
+#         backendServiceArm: '$(azureServiceConnection)'
+#         backendAzureRmResourceGroupName: '$(backendResourceGroup)'
+#         backendAzureRmStorageAccountName: '$(backendStorageAccount)'
+#         backendAzureRmContainerName: '$(backendContainer)'
+#         backendAzureRmKey: '$(backendKey)'
 
-    # Terraform Plan
-    - task: TerraformTaskV2@2
-      displayName: 'Terraform Plan'
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
-        commandOptions: '-var-file="terraform.tfvars"'
-        environmentServiceNameAzureRM: '$(azureServiceConnection)'
+#     # Terraform Validate
+#     - script: terraform validate
+#       displayName: 'Terraform Validate'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
 
-    # Terraform Apply
-    - task: TerraformTaskV2@2
-      displayName: 'Terraform Apply'
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
-        commandOptions: '-var-file="terraform.tfvars" -auto-approve'
-        environmentServiceNameAzureRM: '$(azureServiceConnection)'
+#     # Terraform Plan
+#     - task: TerraformTaskV2@2
+#       displayName: 'Terraform Plan'
+#       inputs:
+#         provider: 'azurerm'
+#         command: 'plan'
+#         workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
+#         commandOptions: '-var-file="tfvars/${{ parameters.environment }}.tfvars"'
+#         environmentServiceNameAzureRM: '$(azureServiceConnection)'
+
+#     # Terraform Apply
+#     - task: TerraformTaskV2@2
+#       displayName: 'Terraform Apply'
+#       inputs:
+#         provider: 'azurerm'
+#         command: 'apply'
+#         workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure'
+#         commandOptions: '-var-file="tfvars/${{ parameters.environment }}.tfvars" -auto-approve'
+#         environmentServiceNameAzureRM: '$(azureServiceConnection)'
 
 
       
 
 
-# ===================================
-# STAGE 2 - BUILD & PUSH DOCKER
-# ===================================
-- stage: Build
-  displayName: Build & Push Docker Images
-  dependsOn: Infrastructure
+# # ===================================
+# # STAGE 2 - BUILD & PUSH DOCKER
+# # ===================================
+# - stage: Build
+#   displayName: Build & Push Docker Images
+#   dependsOn: Infrastructure
 
-  jobs:
-  - job: BuildAndPush
-    displayName: Build Containers
+#   jobs:
+#   - job: BuildAndPush
+#     displayName: Build Containers
 
-    steps:
+#     steps:
 
-    - task: AzureCLI@2
-      displayName: Login to ACR
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
-          az acr login --name $(acrName)
+#     - task: AzureCLI@2
+#       displayName: Login to ACR
+#       inputs:
+#         azureSubscription: $(azureServiceConnection)
+#         scriptType: ps
+#         scriptLocation: inlineScript
+#         inlineScript: |
+#           az acr login --name $(acrName)
 
-    - script: |
-        docker buildx create --use
-        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/frontend:latest src/frontend --push
-      displayName: Build & Push Frontend
+#     - script: |
+#         docker buildx create --use || true
+#         docker buildx build --platform linux/arm64 -t $(acrLoginServer)/frontend:latest src/frontend --push
+#       displayName: Build & Push Frontend
 
-    - script: |
-        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/user-api:latest src/user-api --push
-      displayName: Build & Push User API
+#     - script: |
+#         docker buildx build --platform linux/arm64 -t $(acrLoginServer)/user-api:latest src/user-api --push
+#       displayName: Build & Push User API
 
-    - script: |
-        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/product-api:latest src/product-api --push
-      displayName: Build & Push Product API
+#     - script: |
+#         docker buildx build --platform linux/arm64 -t $(acrLoginServer)/product-api:latest src/product-api --push
+#       displayName: Build & Push Product API
 
-    - script: |
-        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/order-api:latest src/order-api --push
-      displayName: Build & Push Order API
+#     - script: |
+#         docker buildx build --platform linux/arm64 -t $(acrLoginServer)/order-api:latest src/order-api --push
+#       displayName: Build & Push Order API
 
-# ===================================
-# STAGE 3 - DEPLOY TO AKS
-# ===================================
-- stage: Deploy
-  displayName: Deploy to AKS
-  dependsOn: Build
+# # ===================================
+# # STAGE 3 - DEPLOY TO AKS
+# # ===================================
+# - stage: Deploy
+#   displayName: Deploy to AKS
+#   dependsOn: Build
 
-  jobs:
-  - job: KubernetesDeploy
-    displayName: Deploy Kubernetes Manifests
+#   jobs:
+#   - job: KubernetesDeploy
+#     displayName: Deploy Kubernetes Manifests
 
-    steps:
+#     steps:
 
-    - task: AzureCLI@2
-      displayName: Connect to AKS
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
-          az aks get-credentials --resource-group ecom-rg-dev-canadacentral --name ecom-aks-cluster-dev-001 --overwrite-existing
+#     - task: AzureCLI@2
+#       displayName: Connect to AKS
+#       inputs:
+#         azureSubscription: $(azureServiceConnection)
+#         scriptType: ps
+#         scriptLocation: inlineScript
+#         inlineScript: |
+#           az aks get-credentials --resource-group ecom-rg-${{ parameters.environment }}-canadacentral --name ecom-aks-cluster-${{ parameters.environment }}-001 --overwrite-existing
+#           #az aks get-credentials --resource-group ecom-rg-dev-canadacentral --name ecom-aks-cluster-dev-001 --overwrite-existing
 
-    - script: |
-        kubectl apply -f kube/
-      displayName: Deploy Kubernetes Manifests
+#     - script: |
+#         kubectl apply -f kube/
+#       displayName: Deploy Kubernetes Manifests
 
-# ===================================
-# STAGE 4 - VERIFY
-# ===================================
-- stage: Verify
-  displayName: Verify Deployment
-  dependsOn: Deploy
+# # ===================================
+# # STAGE 4 - VERIFY
+# # ===================================
+# - stage: Verify
+#   displayName: Verify Deployment
+#   dependsOn: Deploy
 
-  jobs:
-  - job: Check
-    steps:
-    - script: |
-        kubectl get pods
-        kubectl get svc
-      displayName: Check AKS
+#   jobs:
+#   - job: Check
+#     steps:
+#     - script: |
+#         kubectl get pods
+#         kubectl get svc
+#       displayName: Check AKS

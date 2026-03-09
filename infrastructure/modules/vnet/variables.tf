@@ -18,12 +18,11 @@ variable "vnet_address_space" {
   type        = list(string)
 }
 
-variable "subnet_address_prefix" {
-  description = "Subnet address prefix"
-  type        = list(string)
-}
-
 variable "tags" {
   description = "Common tags applied to resources"
+  type        = map(string)
+}
+variable "subnets" {
+  description = "subnet map"
   type        = map(string)
 }

@@ -3,7 +3,14 @@ output "vnet_id" {
   value       = azurerm_virtual_network.vnet.id
 }
 
-output "subnet_id" {
-  description = "Subnet ID for AKS nodes"
-  value       = azurerm_subnet.subnet.id
+output "app_subnet_id" {
+  value = azurerm_subnet.subnets["app-subnet-1"].id
+}
+
+output "dmz_subnet_id" {
+  value = azurerm_subnet.subnets["dmz-subnet-1"].id
+}
+
+output "data_subnet_id" {
+  value = azurerm_subnet.subnets["data-subnet-1"].id
 }
