@@ -27,7 +27,7 @@ vm_size            = "Standard_D2ps_v6"
 # Networking Configuration
 # ===============================
 
-vnet_space = ["10.0.0.0/16"]
+vnet_address_space = ["10.0.0.0/16"]
 subnets = {
 
   # DMZ / Public Subnets (Load Balancer)

@@ -35,10 +35,10 @@ variable "prefix" {
   type        = string
 }
 
-variable "vnet_space" {
-  description = "Address space for the Virtual Network"
-  type        = list(string)
-}
+# variable "vnet_space" {
+#   description = "Address space for the Virtual Network"
+#   type        = list(string)
+# }
 
 variable "subnet_prefix" {
   description = "Address prefix for subnet"
