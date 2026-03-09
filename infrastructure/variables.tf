@@ -40,10 +40,6 @@ variable "prefix" {
 #   type        = list(string)
 # }
 
-variable "subnet_prefix" {
-  description = "Address prefix for subnet"
-  type        = list(string)
-}
 variable "service_cidr" {
   description = "AKS service CIDR"
   type        = string
