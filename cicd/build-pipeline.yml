@@ -9,7 +9,7 @@ parameters:
   - uat
 
 trigger:
-- main
+- none
 
 pool:
   name: Default
