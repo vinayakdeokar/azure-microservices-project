@@ -98,6 +98,7 @@ stages:
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: ps
+        scriptLocation: inlineScript
         inlineScript: |
           # 1. Determine Tag
           $t = "${{ parameters.PROMOTE_IMAGE_TAG }}"
@@ -135,6 +136,7 @@ stages:
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: ps
+        scriptLocation: inlineScript
         inlineScript: |
           # 1. Determine Tag
           $t = "${{ parameters.PROMOTE_IMAGE_TAG }}"
@@ -188,6 +190,7 @@ stages:
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: ps
+        scriptLocation: inlineScript
         inlineScript: |
           # 1. Determine Tag
           $t = "${{ parameters.PROMOTE_IMAGE_TAG }}"
