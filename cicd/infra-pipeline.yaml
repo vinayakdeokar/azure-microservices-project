@@ -35,14 +35,14 @@ stages:
     - task: TerraformTaskV2@2
       displayName: Terraform Init
       inputs:
-        provider: azurerm
-        command: init
-        workingDirectory: infrastructure
-        backendServiceArm: $(azureServiceConnection)
-        backendAzureRmResourceGroupName: $(backendResourceGroup)
-        backendAzureRmStorageAccountName: $(backendStorageAccount)
-        backendAzureRmContainerName: $(backendContainer)
-        backendAzureRmKey: $(backendKey)
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: 'infrastructure'
+        backendServiceArm: '$(azureServiceConnection)'
+        backendAzureRmResourceGroupName: '$(backendResourceGroup)'
+        backendAzureRmStorageAccountName: '$(backendStorageAccount)'
+        backendAzureRmContainerName: '$(backendContainer)'
+        backendAzureRmKey: '$(backendKey)'
 
     - script: terraform validate
       displayName: Terraform Validate
