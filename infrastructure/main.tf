@@ -17,6 +17,7 @@ module "network" {
   rg_name            = module.resource_group.rg_name
   location           = var.location
   prefix             = var.prefix
+  environment        = var.environment
   vnet_address_space = var.vnet_address_space
 
   subnets = var.subnets

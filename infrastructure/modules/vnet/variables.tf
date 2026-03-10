@@ -26,3 +26,9 @@ variable "subnets" {
   description = "subnet map"
   type        = map(string)
 }
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+}
+
