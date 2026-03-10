@@ -42,7 +42,7 @@ stages:
       displayName: 'Terraform Init'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: 'bash'
+        scriptType: 'ps'
         scriptLocation: 'inlineScript'
         inlineScript: |
           cd infrastructure
@@ -52,7 +52,7 @@ stages:
       displayName: 'Terraform Validate'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: 'bash'
+        scriptType: 'ps'
         scriptLocation: 'inlineScript'
         inlineScript: |
           cd infrastructure
@@ -62,7 +62,7 @@ stages:
       displayName: 'Terraform Plan'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: 'bash'
+        scriptType: 'ps'
         scriptLocation: 'inlineScript'
         inlineScript: |
           cd infrastructure
@@ -72,7 +72,7 @@ stages:
       displayName: 'Terraform Apply'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: 'bash'
+        scriptType: 'ps'
         scriptLocation: 'inlineScript'
         inlineScript: |
           cd infrastructure
