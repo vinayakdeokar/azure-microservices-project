@@ -106,16 +106,16 @@ stages:
 
           Write-Host ">>> STEP 1: PROMOTING IMAGE FROM DEV TO QA ACR <<<"
           az acr login --name ecomacrdev001
-          az acr login --name ecomacrqa001
+          az acr login --name ecomacrqaa001
           Write-Host "Promoting Tag: $t"
-          docker pull ecomacrdev001.azurecr.io/$(imageName):$t
-          docker tag  ecomacrdev001.azurecr.io/$(imageName):$t ecomacrqa001.azurecr.io/$(imageName):$t
-          docker push ecomacrqa001.azurecr.io/$(imageName):$t
+          docker pull --platform linux/arm64 ecomacrdev001.azurecr.io/$(imageName):$t
+          docker tag  ecomacrdev001.azurecr.io/$(imageName):$t ecomacrqaa001.azurecr.io/$(imageName):$t
+          docker push ecomacrqaa001.azurecr.io/$(imageName):$t
 
           Write-Host ">>> STEP 2: DEPLOYING TO AKS QA <<<"
           az aks get-credentials --resource-group ecom-rg-qa-canadacentral --name ecom-aks-cluster-qa-001 --overwrite-existing
           kubectl apply -f kube/$(imageName).yaml
-          kubectl set image deployment/$(imageName) $(imageName)=ecomacrqa001.azurecr.io/$(imageName):$t
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacrqaa001.azurecr.io/$(imageName):$t
           kubectl rollout restart deployment $(imageName)
 
           Write-Host ">>> STEP 3: VERIFYING <<<"
@@ -143,17 +143,17 @@ stages:
           if (-not $t) { $t = "$(IMAGE_TAG)" }
 
           Write-Host ">>> STEP 1: PROMOTING IMAGE FROM QA TO UAT ACR <<<"
-          az acr login --name ecomacrqa001
-          az acr login --name ecomacruat001
+          az acr login --name ecomacrqaa001
+          az acr login --name ecomacruata001
           Write-Host "Promoting Tag: $t"
-          docker pull ecomacrqa001.azurecr.io/$(imageName):$t
-          docker tag  ecomacrqa001.azurecr.io/$(imageName):$t ecomacruat001.azurecr.io/$(imageName):$t
-          docker push ecomacruat001.azurecr.io/$(imageName):$t
+          docker pull --platform linux/arm64 ecomacrqaa001.azurecr.io/$(imageName):$t
+          docker tag  ecomacrqaa001.azurecr.io/$(imageName):$t ecomacruata001.azurecr.io/$(imageName):$t
+          docker push ecomacruata001.azurecr.io/$(imageName):$t
 
           Write-Host ">>> STEP 2: DEPLOYING TO AKS UAT <<<"
           az aks get-credentials --resource-group ecom-rg-uat-canadacentral --name ecom-aks-cluster-uat-001 --overwrite-existing
           kubectl apply -f kube/$(imageName).yaml
-          kubectl set image deployment/$(imageName) $(imageName)=ecomacruat001.azurecr.io/$(imageName):$t
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacruata001.azurecr.io/$(imageName):$t
           kubectl rollout restart deployment $(imageName)
 
           Write-Host ">>> STEP 3: VERIFYING <<<"
@@ -197,17 +197,17 @@ stages:
           if (-not $t) { $t = "$(IMAGE_TAG)" }
 
           Write-Host ">>> STEP 1: PROMOTING IMAGE FROM UAT TO PROD ACR <<<"
-          az acr login --name ecomacruat001
-          az acr login --name ecomacrprod001
+          az acr login --name ecomacruata001
+          az acr login --name ecomacrproda001
           Write-Host "Promoting Tag: $t"
-          docker pull ecomacruat001.azurecr.io/$(imageName):$t
-          docker tag  ecomacruat001.azurecr.io/$(imageName):$t ecomacrprod001.azurecr.io/$(imageName):$t
-          docker push ecomacrprod001.azurecr.io/$(imageName):$t
+          docker pull --platform linux/arm64 ecomacruata001.azurecr.io/$(imageName):$t
+          docker tag  ecomacruata001.azurecr.io/$(imageName):$t ecomacrproda001.azurecr.io/$(imageName):$t
+          docker push ecomacrproda001.azurecr.io/$(imageName):$t
 
           Write-Host ">>> STEP 2: DEPLOYING TO AKS PROD <<<"
           az aks get-credentials --resource-group ecom-rg-prod-canadacentral --name ecom-aks-cluster-prod-001 --overwrite-existing
           kubectl apply -f kube/$(imageName).yaml
-          kubectl set image deployment/$(imageName) $(imageName)=ecomacrprod001.azurecr.io/$(imageName):$t
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacrproda001.azurecr.io/$(imageName):$t
           kubectl rollout restart deployment $(imageName)
 
           Write-Host ">>> STEP 3: VERIFYING <<<"
