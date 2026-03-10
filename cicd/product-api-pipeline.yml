@@ -22,7 +22,7 @@ parameters:
 variables:
   azureServiceConnection: 'sc-ecom-azure-001' # Replace with your Azure DevOps Service Connection name
   imageTag: 'v$(Build.BuildId)'
-  imageName: 'user-api'
+  imageName: 'product-api'
   COMMIT_ID: $[ substring(variables['Build.SourceVersion'],0,8) ]
   IMAGE_TAG: $(imageName)-$(COMMIT_ID)
 
@@ -47,7 +47,7 @@ stages:
           az acr login --name ecomacrdev001
 
     - script: |
-        docker buildx create --use || true
+        docker buildx create --use || truea
         docker buildx build --platform linux/arm64 -t ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG) src/$(imageName) --push
       displayName: Build & Push Docker Image
 
