@@ -1,0 +1,77 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/user-api/*
+
+parameters:
+- name: environment
+  displayName: Select Environment
+  type: string
+  default: dev
+  values:
+  - dev
+  - qa
+  - uat
+  - prod
+
+pool:
+  name: Default
+
+variables:
+  environment: ${{ parameters.environment }}
+  azureServiceConnection: 'my-azure-connection'
+  acrName: 'ecomacr$(environment)001'
+  acrLoginServer: 'ecomacr$(environment)001.azurecr.io'
+  imageName: 'user-api'
+  imageTag: 'latest' # You can replace this with '$(Build.BuildId)' for versioning
+
+stages:
+- stage: Build
+  displayName: Build & Push $(imageName)
+  jobs:
+  - job: DockerBuild
+    steps:
+    - task: AzureCLI@2
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az acr login --name $(acrName)
+
+    - script: |
+        docker buildx create --use || true
+        docker buildx build --platform linux/arm64 -t $(acrLoginServer)/$(imageName):$(imageTag) src/$(imageName) --push
+      displayName: Build & Push Docker Image
+
+- stage: Deploy
+  displayName: Deploy $(imageName) to AKS
+  dependsOn: Build
+  jobs:
+  - job: KubernetesDeployment
+    steps:
+    - task: AzureCLI@2
+      displayName: Connect to AKS
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials --resource-group ecom-rg-$(environment)-canadacentral --name ecom-aks-cluster-$(environment)-001 --overwrite-existing
+
+    - script: |
+        kubectl apply -f kube/$(imageName).yaml
+      displayName: Deploy Kubernetes Manifest
+
+    - script: |
+        kubectl rollout restart deployment $(imageName)
+      displayName: Force Rollout Restart for Deployment
+
+    - script: |
+        kubectl get pods -l app=$(imageName)
+        kubectl get svc $(imageName)
+      displayName: Verify Deployment
