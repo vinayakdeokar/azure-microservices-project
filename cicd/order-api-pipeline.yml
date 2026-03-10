@@ -6,6 +6,8 @@ trigger:
     include:
       - src/order-api/*
 
+pool: Default
+
 parameters:
 - name: ENVIRONMENT
   displayName: "Target Environment"

@@ -6,6 +6,8 @@ trigger:
     include:
       - src/user-api/*
 
+pool: Default
+
 parameters:
 - name: ENVIRONMENT
   displayName: "Target Environment"
