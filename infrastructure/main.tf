@@ -5,7 +5,13 @@ module "resource_group" {
   source   = "./modules/resource_group"
   rg_name  = var.resource_group_name
   location = var.location
-  tags     = var.tags
+ 
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "rg-${local.name_prefix}"
+    }
+  )
 }
 
 # ---------------------------------------
@@ -22,7 +28,12 @@ module "network" {
 
   subnets = var.subnets
 
-  tags = var.tags
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "vnet-${local.name_prefix}"
+    }
+  )
 }
 
 # ---------------------------------------
@@ -33,8 +44,15 @@ module "acr" {
   rg_name  = module.resource_group.rg_name
   location = var.location
   acr_name = var.acr_name
-  tags     = var.tags
+  
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "acr-${local.name_prefix}"
+    }
+  )
 }
+
 
 # -------------------------------
 # Azure Kubernetes Service
@@ -52,8 +70,14 @@ module "aks" {
   service_cidr       = var.service_cidr
   dns_service_ip     = var.dns_service_ip
 
-  tags = var.tags
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "aks-${local.name_prefix}"
+    }
+  )
 }
+
 
 # ---------------------------------------
 # Azure Key Vault
@@ -66,7 +90,13 @@ module "keyvault" {
   keyvault_name = var.keyvault_name
   tenant_id     = data.azurerm_client_config.current.tenant_id
 
-  tags = var.tags
+  
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "kv-${local.name_prefix}"
+    }
+  )
 }
 # ---------------------------------------
 # Application Gateway
@@ -80,7 +110,13 @@ module "app_gateway" {
 
   appgw_subnet_id = module.network.dmz_subnet_id
 
-  tags = var.tags
+
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "appgw-${local.name_prefix}"
+    }
+  )
 }
 # ---------------------------------------
 # AKS Autoscaler Node Pool
@@ -92,7 +128,28 @@ module "autoscaler" {
   vm_size       = var.vm_size
   min_nodes     = var.autoscaler_min_nodes
   max_nodes     = var.autoscaler_max_nodes
-  tags          = var.tags
+ 
+  tags = merge(
+    module.tags.tags,
+    {
+      Name = "np-${local.name_prefix}"
+    }
+  )
 
   depends_on = [module.aks]
+}
+
+# ---------------------------------------
+# Central Tags Module
+# ---------------------------------------
+module "tags" {
+  source      = "./modules/tags"
+  environment = var.environment
+  project     = var.project
+  owner       = var.owner
+  cost_center = var.cost_center
+}
+
+locals {
+  name_prefix = "${var.project}-${var.environment}"
 }
