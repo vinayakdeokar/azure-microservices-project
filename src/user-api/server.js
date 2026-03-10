@@ -13,6 +13,10 @@ mongoose.connect('mongodb://mongodb-service:27017/ecommerce')
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Could not connect to MongoDB', err));
 
+// Health Check route for Azure Application Gateway
+app.get('/', (req, res) => res.status(200).send("User API is healthy"));
+app.get('/users', (req, res) => res.status(200).send("User API is healthy"));
+
 // User Schema 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
