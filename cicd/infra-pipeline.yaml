@@ -16,10 +16,7 @@ pool:
 
 variables:
   environment: ${{ parameters.environment }}
-  azureServiceConnection: 'my-azure-connection'
-  backendResourceGroup: 'tfstate-rg'
-  backendStorageAccount: 'ecomtfstate001'
-  backendContainer: 'tfstate'
+  azureServiceConnection: 'sc-ecom-azure-001'
   backendKey: 'ecom-$(environment)-terraform.tfstate'
 
 stages:

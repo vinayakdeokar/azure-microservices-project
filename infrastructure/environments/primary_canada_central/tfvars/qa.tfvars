@@ -52,9 +52,9 @@ dns_service_ip = "10.2.0.10"
 # ===============================
 
 tags = {
-  Environment = "qa"
-  Project     = "E-Commerce-Microservice"
-  Owner       = "ECM-Platform-Team"
+  environment = "qa"
+  project     = "ecom"
+  owner       = "ecom-platform-team"
 }
 
 keyvault_name = "ecom-keyvault-qa"

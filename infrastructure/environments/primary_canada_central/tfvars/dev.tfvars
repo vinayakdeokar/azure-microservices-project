@@ -50,11 +50,10 @@ dns_service_ip = "10.1.0.10"
 # ===============================
 # Resource Tags
 # ===============================
-
 tags = {
-  Environment = "dev"
-  Project     = "E-Commerce-Microservice"
-  Owner       = "ECM-Platform-Team"
+  environment = "dev"
+  project     = "ecom"
+  owner       = "ecom-platform-team"
 }
 
 keyvault_name = "ecom-keyvault-dev"

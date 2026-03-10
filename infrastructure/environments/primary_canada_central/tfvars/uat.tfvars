@@ -52,9 +52,9 @@ dns_service_ip = "10.3.0.10"
 # ===============================
 
 tags = {
-  Environment = "uat"
-  Project     = "E-Commerce-Microservice"
-  Owner       = "ECM-Platform-Team"
+  environment = "uat"
+  project     = "ecom"
+  owner       = "ecom-platform-team"
 }
 
 keyvault_name = "ecom-keyvault-uat"
