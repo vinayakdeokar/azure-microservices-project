@@ -48,7 +48,7 @@ stages:
 
     - script: |
         docker buildx create --use || true
-        docker buildx build --platform linux/arm64 -t ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG) src/$(imageName) --pushh
+        docker buildx build --platform linux/arm64 -t ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG) src/$(imageName) --push
       displayName: Build & Push Docker Image
 
 # ==========================================
