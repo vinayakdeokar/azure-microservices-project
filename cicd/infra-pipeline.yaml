@@ -17,7 +17,6 @@ pool:
 variables:
   environment: ${{ parameters.environment }}
   azureServiceConnection: 'sc-ecom-azure-001'
-  backendKey: 'ecom-$(environment)-terraform.tfstate'
 
 stages:
 - stage: Terraform
@@ -39,10 +38,7 @@ stages:
         command: 'init'
         workingDirectory: 'infrastructure'
         backendServiceArm: '$(azureServiceConnection)'
-        backendAzureRmResourceGroupName: '$(backendResourceGroup)'
-        backendAzureRmStorageAccountName: '$(backendStorageAccount)'
-        backendAzureRmContainerName: '$(backendContainer)'
-        backendAzureRmKey: '$(backendKey)'
+        commandOptions: '-backend-config="environments/primary_canada_central/backend_configs/$(environment)-backend.conf"'
 
     - script: terraform validate
       displayName: Terraform Validate
