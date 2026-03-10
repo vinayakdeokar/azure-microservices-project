@@ -18,14 +18,13 @@ parameters:
   - qa
   - uat
   - prod
--   name: PROMOTE_IMAGE_TAG
+- name: PROMOTE_IMAGE_TAG
   displayName: "Select Dev Image Tag (Ex: frontend-eeb66bf1)"
   type: string
   default: ''
 
 variables:
-  azureServiceConnection: 'sc-ecom-azure-001' # Replace with your Azure DevOps Service Connection name
-  imageTag: 'v$(Build.BuildId)'
+  azureServiceConnection: 'sc-ecom-azure-001'
   imageName: 'frontend'
   COMMIT_ID: $[ substring(variables['Build.SourceVersion'],0,8) ]
   IMAGE_TAG: $(imageName)-$(COMMIT_ID)
@@ -76,15 +75,9 @@ stages:
 
     - script: |
         kubectl apply -f kube/$(imageName).yaml
-      displayName: Deploy Kubernetes Manifest
-
-    - script: |
         kubectl set image deployment/$(imageName) $(imageName)=ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG)
-      displayName: Update Image in Deployment
-
-    - script: |
         kubectl rollout restart deployment $(imageName)
-      displayName: Force Rollout Restart for Deployment
+      displayName: Deploy & Update Image
 
     - script: |
         kubectl get pods -l app=$(imageName)
@@ -92,7 +85,8 @@ stages:
       displayName: Verify Deployment
 
 # ==========================================
-# STAGE 3: PROMOTE (PULL, TAG, PUSH) & DEPLOY TO QA
+# STAGE 3: PROMOTE & DEPLOY TO QA
+# ==========================================
 - stage: DeployQA
   dependsOn: [] 
   condition: eq('${{ parameters.ENVIRONMENT }}', 'qa')
@@ -100,18 +94,16 @@ stages:
   - job: PromoteAndDeploy
     steps:
     - task: AzureCLI@2
-      displayName: 'QA Promotion and Kubernetes Deployment'
+      displayName: 'QA Promotion and Deployment'
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: ps
         inlineScript: |
-
+          # 1. Determine Tag
           $t = "${{ parameters.PROMOTE_IMAGE_TAG }}"
           if (-not $t) { $t = "$(IMAGE_TAG)" }
 
-          Write-Host "------------------------------------------------"
-          Write-Host "STEP 1: PROMOTING IMAGE FROM DEV TO QA ACR"
-          Write-Host "------------------------------------------------"
+          Write-Host ">>> STEP 1: PROMOTING IMAGE FROM DEV TO QA ACR <<<"
           az acr login --name ecomacrdev001
           az acr login --name ecomacrqa001
           Write-Host "Promoting Tag: $t"
@@ -119,28 +111,18 @@ stages:
           docker tag  ecomacrdev001.azurecr.io/$(imageName):$t ecomacrqa001.azurecr.io/$(imageName):$t
           docker push ecomacrqa001.azurecr.io/$(imageName):$t
 
-          Write-Host "------------------------------------------------"
-          Write-Host "STEP 2: CONNECTING TO AKS AND DEPLOYING"
-          Write-Host "------------------------------------------------"
+          Write-Host ">>> STEP 2: DEPLOYING TO AKS QA <<<"
           az aks get-credentials --resource-group ecom-rg-qa-canadacentral --name ecom-aks-cluster-qa-001 --overwrite-existing
-          
-
           kubectl apply -f kube/$(imageName).yaml
-          
-
           kubectl set image deployment/$(imageName) $(imageName)=ecomacrqa001.azurecr.io/$(imageName):$t
           kubectl rollout restart deployment $(imageName)
 
-          Write-Host "------------------------------------------------"
-          Write-Host "STEP 3: VERIFYING DEPLOYMENT"
-          Write-Host "------------------------------------------------"
+          Write-Host ">>> STEP 3: VERIFYING <<<"
           kubectl get pods -l app=$(imageName)
           kubectl get svc $(imageName)-service
-          Write-Host "QA Deployment Completed Successfully!"
-
 
 # ==========================================
-# STAGE 4: PROMOTE (PULL, TAG, PUSH) & DEPLOY TO UAT
+# STAGE 4: PROMOTE & DEPLOY TO UAT
 # ==========================================
 - stage: DeployUAT
   dependsOn: [] 
@@ -149,54 +131,32 @@ stages:
   - job: PromoteAndDeploy
     steps:
     - task: AzureCLI@2
-      displayName: 'Promote from QA to UAT ACR'
+      displayName: 'UAT Promotion and Deployment'
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: ps
-        scriptLocation: inlineScript
         inlineScript: |
-          $tag = "${{ parameters.PROMOTE_IMAGE_TAG }}"
-          if (-not $tag) { $tag = "$(IMAGE_TAG)" }
-          
-          az acr login --name ecomacrdev001
-          az acr login --name ecomacrqa001
-          
-          docker pull ecomacrdev001.azurecr.io/$(imageName):$tag
-          docker tag  ecomacrdev001.azurecr.io/$(imageName):$tag ecomacrqa001.azurecr.io/$(imageName):$tag
-          docker push ecomacrqa001.azurecr.io/$(imageName):$tag
-          
-        inlineScript: |
+          # 1. Determine Tag
+          $t = "${{ parameters.PROMOTE_IMAGE_TAG }}"
+          if (-not $t) { $t = "$(IMAGE_TAG)" }
+
+          Write-Host ">>> STEP 1: PROMOTING IMAGE FROM QA TO UAT ACR <<<"
           az acr login --name ecomacrqa001
           az acr login --name ecomacruat001
-          docker pull ecomacrqa001.azurecr.io/$(imageName):$(imageTag)
-          docker tag  ecomacrqa001.azurecr.io/$(imageName):$(imageTag) ecomacruat001.azurecr.io/$(imageName):$(IMAGE_TAG)
-          docker push ecomacruat001.azurecr.io/$(imageName):$(IMAGE_TAG)
+          Write-Host "Promoting Tag: $t"
+          docker pull ecomacrqa001.azurecr.io/$(imageName):$t
+          docker tag  ecomacrqa001.azurecr.io/$(imageName):$t ecomacruat001.azurecr.io/$(imageName):$t
+          docker push ecomacruat001.azurecr.io/$(imageName):$t
 
-    - task: AzureCLI@2
-      displayName: Connect to AKS UAT
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
+          Write-Host ">>> STEP 2: DEPLOYING TO AKS UAT <<<"
           az aks get-credentials --resource-group ecom-rg-uat-canadacentral --name ecom-aks-cluster-uat-001 --overwrite-existing
-          
-    - script: |
-        kubectl apply -f kube/$(imageName).yaml
-      displayName: Deploy Kubernetes Manifest to UAT
+          kubectl apply -f kube/$(imageName).yaml
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacruat001.azurecr.io/$(imageName):$t
+          kubectl rollout restart deployment $(imageName)
 
-    - script: |
-        kubectl set image deployment/$(imageName) $(imageName)=ecomacruat001.azurecr.io/$(imageName):$(IMAGE_TAG)
-      displayName: Update Image in UAT Deployment
-
-    - script: |
-        kubectl rollout restart deployment $(imageName)
-      displayName: Force Rollout Restart for UAT Deployment
-
-    - script: |
-        kubectl get pods -l app=$(imageName)
-        kubectl get svc $(imageName)-service
-      displayName: Verify UAT Deployment
+          Write-Host ">>> STEP 3: VERIFYING <<<"
+          kubectl get pods -l app=$(imageName)
+          kubectl get svc $(imageName)-service
 
 # ==========================================
 # STAGE 5: PROD APPROVAL
@@ -215,7 +175,7 @@ stages:
         onTimeout: 'reject'
 
 # ==========================================
-# STAGE 6: PROMOTE (PULL, TAG, PUSH) & DEPLOY TO PROD
+# STAGE 6: PROMOTE & DEPLOY TO PROD
 # ==========================================
 - stage: DeployProd
   dependsOn: ApproveProd
@@ -224,40 +184,29 @@ stages:
   - job: PromoteAndDeployProd
     steps:
     - task: AzureCLI@2
-      displayName: 'Promote from UAT to PROD ACR'
+      displayName: 'PROD Promotion and Deployment'
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: ps
-        scriptLocation: inlineScript
         inlineScript: |
+          # 1. Determine Tag
+          $t = "${{ parameters.PROMOTE_IMAGE_TAG }}"
+          if (-not $t) { $t = "$(IMAGE_TAG)" }
+
+          Write-Host ">>> STEP 1: PROMOTING IMAGE FROM UAT TO PROD ACR <<<"
           az acr login --name ecomacruat001
           az acr login --name ecomacrprod001
-          docker pull ecomacruat001.azurecr.io/$(imageName):$(imageTag)
-          docker tag  ecomacruat001.azurecr.io/$(imageName):$(imageTag) ecomacrprod001.azurecr.io/$(imageName):$(IMAGE_TAG)
-          docker push ecomacrprod001.azurecr.io/$(imageName):$(IMAGE_TAG)
+          Write-Host "Promoting Tag: $t"
+          docker pull ecomacruat001.azurecr.io/$(imageName):$t
+          docker tag  ecomacruat001.azurecr.io/$(imageName):$t ecomacrprod001.azurecr.io/$(imageName):$t
+          docker push ecomacrprod001.azurecr.io/$(imageName):$t
 
-    - task: AzureCLI@2
-      displayName: Connect to AKS PROD
-      inputs:
-        azureSubscription: $(azureServiceConnection)
-        scriptType: ps
-        scriptLocation: inlineScript
-        inlineScript: |
+          Write-Host ">>> STEP 2: DEPLOYING TO AKS PROD <<<"
           az aks get-credentials --resource-group ecom-rg-prod-canadacentral --name ecom-aks-cluster-prod-001 --overwrite-existing
+          kubectl apply -f kube/$(imageName).yaml
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacrprod001.azurecr.io/$(imageName):$t
+          kubectl rollout restart deployment $(imageName)
 
-    - script: |
-        kubectl apply -f kube/$(imageName).yaml
-      displayName: Deploy Kubernetes Manifest to PROD
-
-    - script: |
-        kubectl set image deployment/$(imageName) $(imageName)=ecomacrprod001.azurecr.io/$(imageName):$(IMAGE_TAG)
-      displayName: Update Image in PROD Deployment
-
-    - script: |
-        kubectl rollout restart deployment $(imageName)
-      displayName: Force Rollout Restart for PROD Deployment
-
-    - script: |
-        kubectl get pods -l app=$(imageName)
-        kubectl get svc $(imageName)-service
-      displayName: Verify PROD Deployment
+          Write-Host ">>> STEP 3: VERIFYING <<<"
+          kubectl get pods -l app=$(imageName)
+          kubectl get svc $(imageName)-service
