@@ -32,7 +32,7 @@ stages:
       displayName: 'Terraform Format Check'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: 'bash'
+        scriptType: 'ps'
         scriptLocation: 'inlineScript'
         inlineScript: |
           cd infrastructure
