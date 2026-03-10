@@ -27,38 +27,53 @@ stages:
     - task: TerraformInstaller@0
       inputs:
         terraformVersion: latest
-    - script: terraform fmt -check
-      displayName: Terraform Format Check
-      workingDirectory: infrastructure
-      
-    - task: TerraformTaskV2@2
-      displayName: Terraform Init
+        
+    - task: AzureCLI@2
+      displayName: 'Terraform Format Check'
       inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: 'infrastructure'
-        backendServiceArm: '$(azureServiceConnection)'
-        commandOptions: '-backend-config="environments/primary_canada_central/backend_configs/$(environment)-backend.conf"'
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd infrastructure
+          terraform fmt -check
 
-    - script: terraform validate
-      displayName: Terraform Validate
-      workingDirectory: infrastructure
-
-    - task: TerraformTaskV2@2
-      displayName: Terraform Plan
+    - task: AzureCLI@2
+      displayName: 'Terraform Init'
       inputs:
-        provider: azurerm
-        command: plan
-        workingDirectory: infrastructure
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd infrastructure
+          terraform init -backend-config="environments/primary_canada_central/backend_configs/$(environment)-backend.conf"
 
-        commandOptions: '-var-file="environments/primary_canada_central/tfvars/$(environment).tfvars"'
-        environmentServiceNameAzureRM: $(azureServiceConnection)
-
-    - task: TerraformTaskV2@2
-      displayName: Terraform Apply
+    - task: AzureCLI@2
+      displayName: 'Terraform Validate'
       inputs:
-        provider: azurerm
-        command: apply
-        workingDirectory: infrastructure
-        commandOptions: '-var-file="environments/primary_canada_central/tfvars/$(environment).tfvars"'
-        environmentServiceNameAzureRM: $(azureServiceConnection)
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd infrastructure
+          terraform validate
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Plan'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd infrastructure
+          terraform plan -var-file="environments/primary_canada_central/tfvars/$(environment).tfvars" -out=tfplan
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Apply'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd infrastructure
+          terraform apply -auto-approve tfplan
