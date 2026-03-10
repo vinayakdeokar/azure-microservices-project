@@ -23,6 +23,8 @@ variables:
   azureServiceConnection: 'sc-ecom-azure-001' # Replace with your Azure DevOps Service Connection name
   imageTag: 'v$(Build.BuildId)'
   imageName: 'frontend'
+  COMMIT_ID: $[ substring(variables['Build.SourceVersion'],0,8) ]
+  IMAGE_TAG: $(imageName)-$(COMMIT_ID)
 
 stages:
 
