@@ -4,7 +4,7 @@ trigger:
       - main
   paths:
     include:
-      - src/user-api/*
+      - src/product-api/*
 
 pool: Default
 
