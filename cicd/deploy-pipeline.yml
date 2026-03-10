@@ -40,6 +40,13 @@ stages:
     - script: |
         kubectl apply -f kube/
       displayName: Deploy Kubernetes Manifests
+    
+    - script: |
+        kubectl rollout restart deployment frontend
+        kubectl rollout restart deployment user-api
+        kubectl rollout restart deployment product-api
+        kubectl rollout restart deployment order-api
+      displayName: Force Rollout Restart for Deployments
 
     - script: |
         kubectl get pods

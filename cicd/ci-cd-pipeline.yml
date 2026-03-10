@@ -1,0 +1,178 @@
+trigger: none
+
+parameters:
+- name: ENVIRONMENT
+  displayName: "Target Environment"
+  type: string
+  default: dev
+  values:
+  - dev
+  - qa
+  - prod
+
+variables:
+  azureServiceConnection: 'my-azure-connection' # Replace with your Azure DevOps Service Connection name
+  imageTag: 'v$(Build.BuildId)'
+
+stages:
+
+# ==========================================
+# STAGE 1: BUILD, SCAN & PUSH (DEV)
+# ==========================================
+- stage: BuildDev
+  displayName: 'Build and Scan in DEV'
+  condition: eq('${{ parameters.ENVIRONMENT }}', 'dev')
+  jobs:
+  - job: BuildAndPush
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Login to DEV ACR & Build'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Logging into DEV ACR"
+          az acr login --name ecomacrdev001
+
+          echo "Building Docker images for DEV environment"
+          docker build -t ecomacrdev001.azurecr.io/frontend:$(imageTag) ./src/frontend
+          docker build -t ecomacrdev001.azurecr.io/user-api:$(imageTag) ./src/user-api
+          docker build -t ecomacrdev001.azurecr.io/order-api:$(imageTag) ./src/order-api
+
+    - script: |
+        echo "Installing Trivy"
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+        
+        echo "Scanning Frontend image for vulnerabilities"
+        trivy image --exit-code 0 --severity HIGH,CRITICAL --format json -o trivy-report.json ecomacrdev001.azurecr.io/frontend:$(imageTag)
+        trivy convert --format html -o trivy-report.html trivy-report.json
+      displayName: 'Security Scan (Trivy)'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'trivy-report.html'
+        artifact: 'TrivyReport'
+      displayName: 'Publish Trivy Html Report Artifact'
+
+    - script: |
+        echo "Pushing images to DEV ACR"
+        docker push ecomacrdev001.azurecr.io/frontend:$(imageTag)
+        docker push ecomacrdev001.azurecr.io/user-api:$(imageTag)
+        docker push ecomacrdev001.azurecr.io/order-api:$(imageTag)
+      displayName: 'Push to DEV ACR'
+
+# ==========================================
+# STAGE 2: DEPLOY TO AKS (DEV)
+# ==========================================
+- stage: DeployDev
+  dependsOn: BuildDev
+  condition: eq('${{ parameters.ENVIRONMENT }}', 'dev')
+  jobs:
+  - job: Deploy
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Deploy to AKS DEV'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Connecting to DEV AKS Cluster"
+          az aks get-credentials --resource-group ecom-rg-dev-canadacentral --name ecom-aks-cluster-dev-001 --overwrite-existing
+
+          echo "Updating Kubernetes Deployments with new image tag"
+          kubectl set image deployment/frontend frontend=ecomacrdev001.azurecr.io/frontend:$(imageTag)
+          kubectl set image deployment/user-api user-api=ecomacrdev001.azurecr.io/user-api:$(imageTag)
+          kubectl set image deployment/order-api order-api=ecomacrdev001.azurecr.io/order-api:$(imageTag)
+          
+          kubectl rollout status deployment/frontend
+          kubectl rollout status deployment/user-api
+          kubectl rollout status deployment/order-api
+
+# ==========================================
+# STAGE 3: PROMOTE (PULL, TAG, PUSH) & DEPLOY TO QA
+# ==========================================
+- stage: DeployQA
+  dependsOn: [] # Can run independently if ENVIRONMENT is 'qa'
+  condition: eq('${{ parameters.ENVIRONMENT }}', 'qa')
+  jobs:
+  - job: PromoteAndDeploy
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Promote from DEV to QA & Deploy'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Logging into DEV and QA ACRs"
+          az acr login --name ecomacrdev001
+          az acr login --name ecomacrqa001
+          
+          # Iterate over all services to pull, tag and push
+          for SERVICE in "frontend" "user-api" "order-api"; do
+            echo "Promoting $SERVICE"
+            docker pull ecomacrdev001.azurecr.io/$SERVICE:$(imageTag)
+            docker tag  ecomacrdev001.azurecr.io/$SERVICE:$(imageTag) ecomacrqa001.azurecr.io/$SERVICE:$(imageTag)
+            docker push ecomacrqa001.azurecr.io/$SERVICE:$(imageTag)
+          done
+          
+          echo "Connecting to QA AKS Cluster"
+          az aks get-credentials --resource-group ecom-rg-qa-canadacentral --name ecom-aks-cluster-qa-001 --overwrite-existing
+          
+          echo "Deploying to QA"
+          kubectl set image deployment/frontend frontend=ecomacrqa001.azurecr.io/frontend:$(imageTag)
+          kubectl set image deployment/user-api user-api=ecomacrqa001.azurecr.io/user-api:$(imageTag)
+          kubectl set image deployment/order-api order-api=ecomacrqa001.azurecr.io/order-api:$(imageTag)
+
+# ==========================================
+# STAGE 4: PROD APPROVAL
+# ==========================================
+- stage: ApproveProd
+  dependsOn: []
+  condition: eq('${{ parameters.ENVIRONMENT }}', 'prod')
+  jobs:
+  - job: ManualApproval
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      inputs:
+        notifyUsers: ''
+        instructions: 'Approve to Push images to PROD ACR and Deploy to AKS PROD cluster'
+        onTimeout: 'reject'
+
+# ==========================================
+# STAGE 5: PROMOTE (PULL, TAG, PUSH) & DEPLOY TO PROD
+# ==========================================
+- stage: DeployProd
+  dependsOn: ApproveProd
+  condition: eq('${{ parameters.ENVIRONMENT }}', 'prod')
+  jobs:
+  - job: PromoteAndDeployProd
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Promote from QA to PROD & Deploy'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Logging into QA and PROD ACRs"
+          az acr login --name ecomacrqa001
+          az acr login --name ecomacrprod001
+          
+          for SERVICE in "frontend" "user-api" "order-api"; do
+            echo "Promoting $SERVICE"
+            docker pull ecomacrqa001.azurecr.io/$SERVICE:$(imageTag)
+            docker tag  ecomacrqa001.azurecr.io/$SERVICE:$(imageTag) ecomacrprod001.azurecr.io/$SERVICE:$(imageTag)
+            docker push ecomacrprod001.azurecr.io/$SERVICE:$(imageTag)
+          done
+          
+          echo "Connecting to PROD AKS Cluster"
+          az aks get-credentials --resource-group ecom-rg-prod-canadacentral --name ecom-aks-cluster-prod-001 --overwrite-existing
+          
+          echo "Deploying to PROD"
+          kubectl set image deployment/frontend frontend=ecomacrprod001.azurecr.io/frontend:$(imageTag)
+          kubectl set image deployment/user-api user-api=ecomacrprod001.azurecr.io/user-api:$(imageTag)
+          kubectl set image deployment/order-api order-api=ecomacrprod001.azurecr.io/order-api:$(imageTag)
