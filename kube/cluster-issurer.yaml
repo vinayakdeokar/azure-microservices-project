@@ -12,3 +12,7 @@ spec:
     - http01:
         ingress:
           class: azure-application-gateway
+          ingressTemplate:
+            metadata:
+              annotations:
+                appgw.ingress.kubernetes.io/health-probe-status-codes: "200-399, 404"
