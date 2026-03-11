@@ -11,9 +11,9 @@ location    = "canadacentral"
 # ===============================
 
 resource_group_name = "ecom-rg-qa-canadacentral"
-acr_name = "ecomacrqaa001"
-aks_name = "ecom-aks-cluster-qa-001"
-prefix = "ecom"
+acr_name            = "ecomacrqaa001"
+aks_name            = "ecom-aks-cluster-qa-001"
+prefix              = "ecom"
 
 # ===============================
 # AKS Cluster Configuration
@@ -31,12 +31,12 @@ vnet_address_space = ["10.1.0.0/16"]
 subnets = {
 
   # DMZ / Public Subnets (Load Balancer)
-  qa-dmz-subnet-1  = "10.1.1.0/24"
-  qa-dmz-subnet-2  = "10.1.2.0/24"
+  qa-dmz-subnet-1 = "10.1.1.0/24"
+  qa-dmz-subnet-2 = "10.1.2.0/24"
 
   # Application Subnets (AKS / App Services)
-  qa-app-subnet-1  = "10.1.3.0/24"
-  qa-app-subnet-2  = "10.1.4.0/24"
+  qa-app-subnet-1 = "10.1.3.0/24"
+  qa-app-subnet-2 = "10.1.4.0/24"
 
   # Data Subnets (Database)
   qa-data-subnet-1 = "10.1.5.0/24"

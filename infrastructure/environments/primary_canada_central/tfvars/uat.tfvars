@@ -11,9 +11,9 @@ location    = "canadacentral"
 # ===============================
 
 resource_group_name = "ecom-rg-uat-canadacentral"
-acr_name = "ecomacruata001"
-aks_name = "ecom-aks-cluster-uat-001"
-prefix = "ecom"
+acr_name            = "ecomacruata001"
+aks_name            = "ecom-aks-cluster-uat-001"
+prefix              = "ecom"
 
 # ===============================
 # AKS Cluster Configuration
@@ -31,12 +31,12 @@ vnet_address_space = ["10.2.0.0/16"]
 subnets = {
 
   # DMZ / Public Subnets (Load Balancer)
-  uat-dmz-subnet-1  = "10.2.1.0/24"
-  uat-dmz-subnet-2  = "10.2.2.0/24"
+  uat-dmz-subnet-1 = "10.2.1.0/24"
+  uat-dmz-subnet-2 = "10.2.2.0/24"
 
   # Application Subnets (AKS / App Services)
-  uat-app-subnet-1  = "10.2.3.0/24"
-  uat-app-subnet-2  = "10.2.4.0/24"
+  uat-app-subnet-1 = "10.2.3.0/24"
+  uat-app-subnet-2 = "10.2.4.0/24"
 
   # Data Subnets (Database)
   uat-data-subnet-1 = "10.2.5.0/24"

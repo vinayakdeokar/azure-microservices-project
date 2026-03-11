@@ -5,7 +5,7 @@ module "resource_group" {
   source   = "./modules/resource_group"
   rg_name  = var.resource_group_name
   location = var.location
- 
+
   tags = merge(
     module.tags.tags,
     {
@@ -44,7 +44,7 @@ module "acr" {
   rg_name  = module.resource_group.rg_name
   location = var.location
   acr_name = var.acr_name
-  
+
   tags = merge(
     module.tags.tags,
     {
@@ -90,7 +90,7 @@ module "keyvault" {
   keyvault_name = var.keyvault_name
   tenant_id     = data.azurerm_client_config.current.tenant_id
 
-  
+
   tags = merge(
     module.tags.tags,
     {
@@ -128,7 +128,7 @@ module "autoscaler" {
   vm_size       = var.vm_size
   min_nodes     = var.autoscaler_min_nodes
   max_nodes     = var.autoscaler_max_nodes
- 
+
   tags = merge(
     module.tags.tags,
     {

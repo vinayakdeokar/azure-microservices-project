@@ -1,15 +1,15 @@
 variable "environment" {
-  type        = string
+  type = string
 }
 
 variable "project" {
-  type        = string
+  type = string
 }
 
 variable "owner" {
-  type        = string
+  type = string
 }
 
 variable "cost_center" {
-  type        = string
+  type = string
 }

@@ -12,7 +12,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vm_size        = var.vm_size
     vnet_subnet_id = var.vnet_subnet_id
   }
-  
+
   ingress_application_gateway {
     gateway_id = var.app_gateway_id
   }
@@ -25,7 +25,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_plugin      = "azure"
     network_plugin_mode = "overlay"
     load_balancer_sku   = "standard"
-  
+
     service_cidr   = var.service_cidr
     dns_service_ip = var.dns_service_ip
   }
