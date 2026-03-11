@@ -28,6 +28,7 @@ variables:
   serviceName: 'product-api'
   COMMIT_ID: $[ substring(variables['Build.SourceVersion'],0,8) ]
   IMAGE_TAG: $(serviceName)-$(COMMIT_ID)
+  kube_manifest_path: 'kube/product-service'
 
 stages:
 
