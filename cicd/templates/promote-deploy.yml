@@ -37,7 +37,7 @@ steps:
       $ns = "${{ parameters.environment }}"
       $nsExists = kubectl get namespace $ns --ignore-not-found
       if (-not $nsExists) { kubectl create namespace $ns }
-      kubectl apply -f $(kube_manifest_path)/* -n $ns
+      kubectl apply -f $(kube_manifest_path) -n $ns
       kubectl set image deployment/$(serviceName) $(serviceName)=${{ parameters.targetAcr }}.azurecr.io/$(serviceName):$imageTag -n $ns
       kubectl rollout restart deployment $(serviceName) -n $ns
       
