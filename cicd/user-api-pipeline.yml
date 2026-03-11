@@ -25,9 +25,9 @@ parameters:
 
 variables:
   azureServiceConnection: 'sc-ecom-azure-001'
-  imageName: 'user-api'
+  serviceName: 'user-api'
   COMMIT_ID: $[ substring(variables['Build.SourceVersion'],0,8) ]
-  IMAGE_TAG: $(imageName)-$(COMMIT_ID)
+  IMAGE_TAG: $(serviceName)-$(COMMIT_ID)
 
 stages:
 
@@ -35,7 +35,7 @@ stages:
 # STAGE 1: BUILD & PUSH (DEV)
 # ==========================================
 - stage: BuildDev
-  displayName: 'Build & Push $(imageName)'
+  displayName: 'Build & Push $(serviceName)'
   condition: eq('${{ parameters.ENVIRONMENT }}', 'dev')
   jobs:
   - job: DockerBuild
@@ -51,14 +51,14 @@ stages:
 
     - script: |
         docker buildx create --use || true
-        docker buildx build --platform linux/arm64 -t ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG) src/$(imageName) --push
+        docker buildx build --platform linux/arm64 -t ecomacrdev001.azurecr.io/$(serviceName):$(IMAGE_TAG) src/$(serviceName) --push
       displayName: Build & Push Docker Image
 
 # ==========================================
 # STAGE 2: DEPLOY TO AKS (DEV)
 # ==========================================
 - stage: DeployDev
-  displayName: Deploy $(imageName) to AKS DEV
+  displayName: Deploy $(serviceName) to AKS DEV
   dependsOn: BuildDev
   condition: eq('${{ parameters.ENVIRONMENT }}', 'dev')
   jobs:
@@ -77,14 +77,14 @@ stages:
           if (-not $nsExists) { kubectl create namespace $ns }
 
     - script: |
-        kubectl apply -f kube/$(imageName).yaml -n ${{ parameters.ENVIRONMENT }}
-        kubectl set image deployment/$(imageName) $(imageName)=ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG) -n ${{ parameters.ENVIRONMENT }}
-        kubectl rollout restart deployment $(imageName) -n ${{ parameters.ENVIRONMENT }}
+        kubectl apply -f kube/$(serviceName).yaml -n ${{ parameters.ENVIRONMENT }}
+        kubectl set image deployment/$(serviceName) $(serviceName)=ecomacrdev001.azurecr.io/$(serviceName):$(IMAGE_TAG) -n ${{ parameters.ENVIRONMENT }}
+        kubectl rollout restart deployment $(serviceName) -n ${{ parameters.ENVIRONMENT }}
       displayName: Deploy & Update Image
 
     - script: |
-        kubectl get pods -l app=$(imageName) -n ${{ parameters.ENVIRONMENT }}
-        kubectl get svc $(imageName)-service -n ${{ parameters.ENVIRONMENT }}
+        kubectl get pods -l app=$(serviceName) -n ${{ parameters.ENVIRONMENT }}
+        kubectl get svc $(serviceName)-service -n ${{ parameters.ENVIRONMENT }}
       displayName: Verify Deployment
 
 # ==========================================
@@ -136,7 +136,7 @@ stages:
     - task: ManualValidation@0
       inputs:
         notifyUsers: ''
-        instructions: 'Approve to Push $(imageName) image to PROD ACR and Deploy to AKS PROD cluster'
+        instructions: 'Approve to Push $(serviceName) image to PROD ACR and Deploy to AKS PROD cluster'
         onTimeout: 'reject'
 
 # ==========================================

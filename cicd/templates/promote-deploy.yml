@@ -22,25 +22,25 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
       # Determine Tag
-      $t = "${{ parameters.promoteImageTag }}"
-      if (-not $t) { $t = "$(IMAGE_TAG)" }
+      $imageTag = "${{ parameters.promoteImageTag }}"
+      if (-not $imageTag) { $imageTag = "$(IMAGE_TAG)" }
       
       Write-Host ">>> STEP 1: PROMOTING IMAGE <<<"
       az acr login --name ${{ parameters.sourceAcr }}
       az acr login --name ${{ parameters.targetAcr }}
-      docker pull --platform linux/arm64 ${{ parameters.sourceAcr }}.azurecr.io/$(imageName):$t
-      docker tag  ${{ parameters.sourceAcr }}.azurecr.io/$(imageName):$t ${{ parameters.targetAcr }}.azurecr.io/$(imageName):$t
-      docker push ${{ parameters.targetAcr }}.azurecr.io/$(imageName):$t
+      docker pull --platform linux/arm64 ${{ parameters.sourceAcr }}.azurecr.io/$(serviceName):$imageTag
+      docker tag  ${{ parameters.sourceAcr }}.azurecr.io/$(serviceName):$imageTag ${{ parameters.targetAcr }}.azurecr.io/$(serviceName):$imageTag
+      docker push ${{ parameters.targetAcr }}.azurecr.io/$(serviceName):$imageTag
       
       Write-Host ">>> STEP 2: DEPLOYING TO AKS <<<"
       az aks get-credentials --resource-group ${{ parameters.aksResourceGroup }} --name ${{ parameters.aksCluster }} --overwrite-existing
       $ns = "${{ parameters.environment }}"
       $nsExists = kubectl get namespace $ns --ignore-not-found
       if (-not $nsExists) { kubectl create namespace $ns }
-      kubectl apply -f kube/$(imageName).yaml -n $ns
-      kubectl set image deployment/$(imageName) $(imageName)=${{ parameters.targetAcr }}.azurecr.io/$(imageName):$t -n $ns
-      kubectl rollout restart deployment $(imageName) -n $ns
+      kubectl apply -f $(kube_manifest_path)/* -n $ns
+      kubectl set image deployment/$(serviceName) $(serviceName)=${{ parameters.targetAcr }}.azurecr.io/$(serviceName):$imageTag -n $ns
+      kubectl rollout restart deployment $(serviceName) -n $ns
       
       Write-Host ">>> STEP 3: VERIFYING <<<"
-      kubectl get pods -l app=$(imageName) -n $ns
-      kubectl get svc $(imageName)-service -n $ns
+      kubectl get pods -l app=$(serviceName) -n $ns
+      kubectl get svc $(serviceName)-service -n $ns
