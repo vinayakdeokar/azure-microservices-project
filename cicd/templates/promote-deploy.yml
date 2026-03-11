@@ -37,6 +37,19 @@ steps:
       $ns = "${{ parameters.environment }}"
       $nsExists = kubectl get namespace $ns --ignore-not-found
       if (-not $nsExists) { kubectl create namespace $ns }
+
+      # Determine Environment-Specific Domain
+      $domainName = "ecom-store-vd.duckdns.org"
+      if ("$ns" -eq "dev") {
+        $domainName = "ecom-dev-vd.duckdns.org"
+      } elseif ("$ns" -eq "qa") {
+        $domainName = "ecom-qa-vd.duckdns.org"
+      }
+      # Replace domain in manifest files (PowerShell equivalent of sed)
+      Get-ChildItem -Path $(kube_manifest_path) -Filter *ingress.yaml | ForEach-Object {
+        (Get-Content $_.FullName) -replace 'ecom-store-vd.duckdns.org', $domainName | Set-Content $_.FullName
+      }
+      
       kubectl apply -f $(kube_manifest_path) -n $ns
       kubectl set image deployment/$(serviceName) $(serviceName)=${{ parameters.targetAcr }}.azurecr.io/$(serviceName):$imageTag -n $ns
       kubectl rollout restart deployment $(serviceName) -n $ns

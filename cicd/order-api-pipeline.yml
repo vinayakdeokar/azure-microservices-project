@@ -78,6 +78,18 @@ stages:
           if (-not $nsExists) { kubectl create namespace $ns }
 
     - script: |
+        if [[ "${{ parameters.ENVIRONMENT }}" == "dev" ]]; then
+          export DOMAIN_NAME="ecom-dev-vd.duckdns.org"
+        elif [[ "${{ parameters.ENVIRONMENT }}" == "qa" ]]; then
+          export DOMAIN_NAME="ecom-qa-vd.duckdns.org"
+        else
+          export DOMAIN_NAME="ecom-store-vd.duckdns.org"
+        fi
+        
+        # Replace the hardcoded domain with the environment-specific domain
+        sed -i "s/ecom-store-vd.duckdns.org/${DOMAIN_NAME}/g" $(kube_manifest_path)/*ingress.yaml
+
+    - script: |
         kubectl apply -f $(kube_manifest_path) -n ${{ parameters.ENVIRONMENT }}
         kubectl set image deployment/$(serviceName) $(serviceName)=ecomacrdev001.azurecr.io/$(serviceName):$(IMAGE_TAG) -n ${{ parameters.ENVIRONMENT }}
         kubectl rollout restart deployment $(serviceName) -n ${{ parameters.ENVIRONMENT }}
