@@ -1,0 +1,87 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - kube/mongodb-service/*
+
+pool: Default
+
+parameters:
+- name: ENVIRONMENT
+  displayName: "Target Environment"
+  type: string
+  default: dev
+  values:
+  - dev
+  - qa
+  - uat
+  - prod
+
+variables:
+  azureServiceConnection: 'sc-ecom-azure-001'
+  kube_manifest_path: 'kube/mongodb-service'
+
+stages:
+- stage: DeployMongoDB
+  displayName: 'Deploy MongoDB to ${{ parameters.ENVIRONMENT }}'
+  jobs:
+  - job: KubernetesDeployment
+    steps:
+    - task: AzureCLI@2
+      displayName: Connect to AKS DEV
+      condition: eq('${{ parameters.ENVIRONMENT }}', 'dev')
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials --resource-group ecom-rg-dev-canadacentral --name ecom-aks-cluster-dev-001 --overwrite-existing
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+
+    - task: AzureCLI@2
+      displayName: Connect to AKS QA
+      condition: eq('${{ parameters.ENVIRONMENT }}', 'qa')
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials --resource-group ecom-rg-qa-canadacentral --name ecom-aks-cluster-qa-001 --overwrite-existing
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+
+    - task: AzureCLI@2
+      displayName: Connect to AKS UAT
+      condition: eq('${{ parameters.ENVIRONMENT }}', 'uat')
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials --resource-group ecom-rg-uat-canadacentral --name ecom-aks-cluster-uat-001 --overwrite-existing
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+
+    - task: AzureCLI@2
+      displayName: Connect to AKS PROD
+      condition: eq('${{ parameters.ENVIRONMENT }}', 'prod')
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials --resource-group ecom-rg-prod-canadacentral --name ecom-aks-cluster-prod-001 --overwrite-existing
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+
+    - script: |
+        kubectl apply -f $(kube_manifest_path)/mongodb.yaml -n ${{ parameters.ENVIRONMENT }}
+        kubectl apply -f $(kube_manifest_path)/mongo-seed.yaml -n ${{ parameters.ENVIRONMENT }}
+      displayName: Deploy MongoDB & Seed Data
