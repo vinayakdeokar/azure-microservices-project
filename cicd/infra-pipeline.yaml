@@ -7,6 +7,13 @@ parameters:
   - dev
   - qa
   - uat
+- name: action
+  displayName: Select Action
+  type: string
+  default: Apply
+  values:
+  - Apply
+  - Destroy
 
 trigger: none
 pr: none
@@ -16,11 +23,12 @@ pool:
 
 variables:
   environment: ${{ parameters.environment }}
+  action: ${{ parameters.action }}
   azureServiceConnection: 'sc-ecom-azure-001'
 
 stages:
 - stage: Terraform
-  displayName: Deploy Infrastructure
+  displayName: 'Terraform ${{ parameters.action }} - ${{ parameters.environment }}'
   jobs:
   - job: TerraformDeployment
     steps:
@@ -66,10 +74,26 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           cd infrastructure
-          terraform plan -var-file="environments/primary_canada_central/tfvars/$(environment).tfvars" -out=tfplan
+          if ('${{ parameters.action }}' -eq 'Destroy') {
+            terraform plan -destroy -var-file="environments/primary_canada_central/tfvars/$(environment).tfvars" -out=tfplan
+          } else {
+            terraform plan -var-file="environments/primary_canada_central/tfvars/$(environment).tfvars" -out=tfplan
+          }
 
     - task: AzureCLI@2
       displayName: 'Terraform Apply'
+      condition: eq('${{ parameters.action }}', 'Apply')
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          cd infrastructure
+          terraform apply -auto-approve tfplan
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Destroy'
+      condition: eq('${{ parameters.action }}', 'Destroy')
       inputs:
         azureSubscription: '$(azureServiceConnection)'
         scriptType: 'ps'
