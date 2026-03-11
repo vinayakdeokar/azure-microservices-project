@@ -145,7 +145,7 @@ async function loadProducts(){
         const res = await fetch("/products");
         const data = await res.json();
         allProducts = data.map((p,i)=>({
-            id: i, name: p.name, price: p.price, img: p.image, stars: "⭐⭐⭐⭐"
+            id: i, name: p.name, price: p.price, img: p.img || p.image, stars: "⭐⭐⭐⭐"
         }));
         showItems(allProducts);
     } catch(err) {
