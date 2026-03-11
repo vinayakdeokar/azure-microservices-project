@@ -72,16 +72,19 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           az aks get-credentials --resource-group ecom-rg-dev-canadacentral --name ecom-aks-cluster-dev-001 --overwrite-existing
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
 
     - script: |
-        kubectl apply -f kube/$(imageName).yaml
-        kubectl set image deployment/$(imageName) $(imageName)=ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG)
-        kubectl rollout restart deployment $(imageName)
+        kubectl apply -f kube/$(imageName).yaml -n ${{ parameters.ENVIRONMENT }}
+        kubectl set image deployment/$(imageName) $(imageName)=ecomacrdev001.azurecr.io/$(imageName):$(IMAGE_TAG) -n ${{ parameters.ENVIRONMENT }}
+        kubectl rollout restart deployment $(imageName) -n ${{ parameters.ENVIRONMENT }}
       displayName: Deploy & Update Image
 
     - script: |
-        kubectl get pods -l app=$(imageName)
-        kubectl get svc $(imageName)-service
+        kubectl get pods -l app=$(imageName) -n ${{ parameters.ENVIRONMENT }}
+        kubectl get svc $(imageName)-service -n ${{ parameters.ENVIRONMENT }}
       displayName: Verify Deployment
 
 # ==========================================
@@ -114,13 +117,16 @@ stages:
 
           Write-Host ">>> STEP 2: DEPLOYING TO AKS QA <<<"
           az aks get-credentials --resource-group ecom-rg-qa-canadacentral --name ecom-aks-cluster-qa-001 --overwrite-existing
-          kubectl apply -f kube/$(imageName).yaml
-          kubectl set image deployment/$(imageName) $(imageName)=ecomacrqaa001.azurecr.io/$(imageName):$t
-          kubectl rollout restart deployment $(imageName)
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+          kubectl apply -f kube/$(imageName).yaml -n ${{ parameters.ENVIRONMENT }}
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacrqaa001.azurecr.io/$(imageName):$t -n ${{ parameters.ENVIRONMENT }}
+          kubectl rollout restart deployment $(imageName) -n ${{ parameters.ENVIRONMENT }}
 
           Write-Host ">>> STEP 3: VERIFYING <<<"
-          kubectl get pods -l app=$(imageName)
-          kubectl get svc $(imageName)-service
+          kubectl get pods -l app=$(imageName) -n ${{ parameters.ENVIRONMENT }}
+          kubectl get svc $(imageName)-service -n ${{ parameters.ENVIRONMENT }}
 
 # ==========================================
 # STAGE 4: PROMOTE & DEPLOY TO UAT
@@ -152,13 +158,16 @@ stages:
 
           Write-Host ">>> STEP 2: DEPLOYING TO AKS UAT <<<"
           az aks get-credentials --resource-group ecom-rg-uat-canadacentral --name ecom-aks-cluster-uat-001 --overwrite-existing
-          kubectl apply -f kube/$(imageName).yaml
-          kubectl set image deployment/$(imageName) $(imageName)=ecomacruata001.azurecr.io/$(imageName):$t
-          kubectl rollout restart deployment $(imageName)
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+          kubectl apply -f kube/$(imageName).yaml -n ${{ parameters.ENVIRONMENT }}
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacruata001.azurecr.io/$(imageName):$t -n ${{ parameters.ENVIRONMENT }}
+          kubectl rollout restart deployment $(imageName) -n ${{ parameters.ENVIRONMENT }}
 
           Write-Host ">>> STEP 3: VERIFYING <<<"
-          kubectl get pods -l app=$(imageName)
-          kubectl get svc $(imageName)-service
+          kubectl get pods -l app=$(imageName) -n ${{ parameters.ENVIRONMENT }}
+          kubectl get svc $(imageName)-service -n ${{ parameters.ENVIRONMENT }}
 
 # ==========================================
 # STAGE 5: PROD APPROVAL
@@ -206,10 +215,14 @@ stages:
 
           Write-Host ">>> STEP 2: DEPLOYING TO AKS PROD <<<"
           az aks get-credentials --resource-group ecom-rg-prod-canadacentral --name ecom-aks-cluster-prod-001 --overwrite-existing
-          kubectl apply -f kube/$(imageName).yaml
-          kubectl set image deployment/$(imageName) $(imageName)=ecomacrproda001.azurecr.io/$(imageName):$t
-          kubectl rollout restart deployment $(imageName)
+          $ns = "${{ parameters.ENVIRONMENT }}"
+          $nsExists = kubectl get namespace $ns --ignore-not-found
+          if (-not $nsExists) { kubectl create namespace $ns }
+          kubectl apply -f kube/$(imageName).yaml -n ${{ parameters.ENVIRONMENT }}
+          kubectl set image deployment/$(imageName) $(imageName)=ecomacrproda001.azurecr.io/$(imageName):$t -n ${{ parameters.ENVIRONMENT }}
+          kubectl rollout restart deployment $(imageName) -n ${{ parameters.ENVIRONMENT }}
 
           Write-Host ">>> STEP 3: VERIFYING <<<"
-          kubectl get pods -l app=$(imageName)
-          kubectl get svc $(imageName)-service
+          kubectl get pods -l app=$(imageName) -n ${{ parameters.ENVIRONMENT }}
+          kubectl get svc $(imageName)-service -n ${{ parameters.ENVIRONMENT }}
+
