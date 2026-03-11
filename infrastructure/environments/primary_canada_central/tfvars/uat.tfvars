@@ -54,8 +54,10 @@ dns_service_ip = "10.3.0.10"
 tags = {
   environment = "uat"
   project     = "ecom"
-  owner       = "ecom-platform-team"
 }
+
+owner       = "ecom-team"
+cost_center = "ecom-cc-uat"
 
 keyvault_name = "ecom-keyvault-uat"
 

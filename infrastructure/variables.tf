@@ -65,6 +65,7 @@ variable "tags" {
   description = "Common tags applied to all resources"
   type        = map(string)
 }
+
 # ---------------------------------------
 # AKS Cluster Configuration
 # ---------------------------------------
@@ -111,4 +112,14 @@ variable "autoscaler_min_nodes" {
 variable "autoscaler_max_nodes" {
   description = "Maximum nodes for autoscaler"
   type        = number
+}
+
+variable "owner" {
+  description = "Owner of the resources"
+  type        = string
+}
+
+variable "cost_center" {
+  description = "Cost center for the resources"
+  type        = string
 }

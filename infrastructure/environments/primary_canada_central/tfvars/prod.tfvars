@@ -54,8 +54,10 @@ dns_service_ip = "10.4.0.10"
 tags = {
   environment = "prod"
   project     = "ecom"
-  owner       = "ecom-platform-team"
 }
+
+owner       = "ecom-team"
+cost_center = "ecom-cc-prod"
 
 keyvault_name = "ecom-keyvault-prod"
 
