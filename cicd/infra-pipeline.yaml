@@ -123,7 +123,7 @@ stages:
           $duckdnsUrl = "https://www.duckdns.org/update?domains=$duckdnsDomain&token=$duckdnsToken&ip=$appgwIp"
           
           Write-Host "Updating Duck DNS via temporary pod inside AKS cluster (Bypassing Local DNS)..."
-          kubectl run duckdns-updater --image=curlimages/curl:latest --restart=Never --rm -i -- -s $duckdnsUrl
+          kubectl run duckdns-updater --image=curlimages/curl:latest --restart=Never --rm -i -- sh -c "curl -s '$duckdnsUrl'"
 
 
     - task: AzureCLI@2
