@@ -123,3 +123,16 @@ variable "cost_center" {
   description = "Cost center for the resources"
   type        = string
 }
+# ---------------------------------------
+# Duck DNS Variables
+# ---------------------------------------
+variable "duckdns_domain" {
+  description = "The Duck DNS subdomain (e.g., ecom-store-vd)"
+  type        = string
+}
+
+variable "duckdns_token" {
+  description = "The Duck DNS token"
+  type        = string
+  sensitive   = true
+}
