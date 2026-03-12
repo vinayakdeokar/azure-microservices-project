@@ -56,13 +56,13 @@ tags = {
   owner       = "ecom-platform-team"
 }
 
-tags = {
-  environment = "dev"
-  project     = "ecom"
-}
+# tags = {
+#   environment = "dev"
+#   project     = "ecom"
+# }
 
-owner       = "ecom-team"
-cost_center = "ecom-cc-dev"
+# owner       = "ecom-team"
+# cost_center = "ecom-cc-dev"
 
 keyvault_name = "ecom-keyvault-dev"
 
