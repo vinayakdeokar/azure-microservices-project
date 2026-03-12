@@ -76,8 +76,8 @@ resource "null_resource" "update_duckdns" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["pwsh", "-Command"]
-    command     = "Invoke-RestMethod -Uri 'https://www.duckdns.org/update?domains=${var.duckdns_domain}&token=${var.duckdns_token}&ip=${azurerm_public_ip.appgw_pip.ip_address}'"
+    interpreter = ["powershell", "-Command"]
+    command = "Invoke-WebRequest -Uri \"https://www.duckdns.org/update?domains=${var.duckdns_domain}&token=${var.duckdns_token}&ip=${azurerm_public_ip.appgw_pip.ip_address}\""
   }
 
   depends_on = [azurerm_public_ip.appgw_pip]
