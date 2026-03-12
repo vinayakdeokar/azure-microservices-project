@@ -155,17 +155,6 @@ resource "azurerm_role_assignment" "agic_appgw" {
   principal_id         = module.aks.agic_identity_id
 }
 
-# ---------------------------------------
-# Cert Manager Module
-# ---------------------------------------
-module "cert_manager" {
-  source      = "./modules/cert_manager"
-  email       = "admin@ecom-store-vd.duckdns.org"
-  environment = var.environment
-
-  depends_on = [module.aks]
-}
-
 
 # ---------------------------------------
 # Central Tags Module

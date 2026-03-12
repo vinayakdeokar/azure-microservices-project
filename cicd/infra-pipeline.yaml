@@ -92,6 +92,30 @@ stages:
           terraform apply -auto-approve tfplan
 
     - task: AzureCLI@2
+      displayName: 'Post-Deployment: K8s Core Setup'
+      condition: and(succeeded(), eq('${{ parameters.action }}', 'Apply'))
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          # 1. Get AKS Credentials
+          az aks get-credentials --resource-group ecom-rg-$(environment)-canadacentral --name ecom-aks-cluster-$(environment)-001 --overwrite-existing
+          
+          # 2. Install Cert-Manager (if not exists)
+          $certManagerFound = kubectl get ns cert-manager --ignore-not-found
+          if (-not $certManagerFound) {
+            Write-Host "Installing Cert-Manager..."
+            kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+            Write-Host "Waiting for Cert-Manager pods to be ready..."
+            Start-Sleep -Seconds 60
+          }
+
+          # 3. Apply ClusterIssuer
+          Write-Host "Applying ClusterIssuer..."
+          kubectl apply -f kube/cluster-issurer.yaml --validate=false
+
+    - task: AzureCLI@2
       displayName: 'Terraform Destroy'
       condition: eq('${{ parameters.action }}', 'Destroy')
       inputs:
