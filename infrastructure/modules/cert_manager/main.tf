@@ -48,3 +48,8 @@ resource "kubernetes_manifest" "cluster_issuer" {
 
   depends_on = [helm_release.cert_manager]
 }
+resource "kubernetes_namespace" "env_ns" {
+  metadata {
+    name = var.environment
+  }
+}
