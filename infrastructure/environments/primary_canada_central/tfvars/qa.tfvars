@@ -65,3 +65,6 @@ autoscaler_nodepool_name = "autoscale"
 
 autoscaler_min_nodes = 2
 autoscaler_max_nodes = 5
+
+duckdns_domain = "ecom-qa-vd"
+duckdns_token  = "161c59c4-994e-4722-b690-3cb6a01da8e7S"

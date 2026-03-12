@@ -11,10 +11,10 @@ spec:
   ingressClassName: azure-application-gateway
   tls:
   - hosts:
-    - ecom-dev-vd.duckdns.org
+    - ecom-store-vd.duckdns.org
     secretName: ecommerce-tls-secret
   rules:
-  - host: ecom-dev-vd.duckdns.org
+  - host: ecom-store-vd.duckdns.org
     http:
       paths:
       - path: /
