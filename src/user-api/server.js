@@ -56,7 +56,7 @@ app.post('/users/login', async (req, res) => {
 
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(400).json({ error: "युजर मिळाला नाही!" });
+            return res.status(400).json({ error: "User not found!" });
         }
 
         
@@ -64,7 +64,7 @@ app.post('/users/login', async (req, res) => {
         console.log(`Password Match Status: ${isMatch}`); 
 
         if (!isMatch) {
-            return res.status(400).json({ error: "पासवर्ड चुकीचा आहे!" });
+            return res.status(400).json({ error: "Wrong password please enter correct password!" });
         }
 
         res.json({ message: "Login Successful!", username: user.username });
