@@ -115,17 +115,6 @@ stages:
           Write-Host "Applying ClusterIssuer..."
           kubectl apply -f kube/cluster-issurer.yaml --validate=false
 
-          # 4. Update Duck DNS from AKS to Bypass Local Network Issues
-          Write-Host "Fetching Application Gateway Public IP..."
-          $appgwIp = az network public-ip show --resource-group "ecom-rg-$(environment)-canadacentral" --name "appgw-public-ip" --query ipAddress -o tsv
-          $duckdnsDomain = "ecom-$(environment)-vd"
-          $duckdnsToken = "161c59c4-994e-4722-b690-3cb6a01da8e7"
-          $duckdnsUrl = "https://www.duckdns.org/update?domains=$duckdnsDomain&token=$duckdnsToken&ip=$appgwIp"
-          
-          Write-Host "Updating Duck DNS via temporary pod inside AKS cluster (Bypassing Local DNS)..."
-          kubectl run duckdns-updater --image=curlimages/curl:latest --restart=Never --rm -i -- sh -c "curl -s '$duckdnsUrl'"
-
-
     - task: AzureCLI@2
       displayName: 'Terraform Destroy'
       condition: eq('${{ parameters.action }}', 'Destroy')
