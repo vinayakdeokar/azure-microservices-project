@@ -140,9 +140,9 @@ module "autoscaler" {
   depends_on = [module.aks]
 }
 
-# ---------------------------------------
+# ----------------------------------------
 # Central Tags Module
-# ---------------------------------------
+# ----------------------------------------
 module "tags" {
   source      = "./modules/tags"
   environment = var.environment
