@@ -111,8 +111,11 @@ module "app_gateway" {
 
   appgw_subnet_id = module.network.dmz_subnet_id
 
+  duckdns_domain = var.duckdns_domain
+  duckdns_token  = var.duckdns_token
 
   tags = merge(
+
     module.tags.tags,
     {
       Name = "appgw-${local.name_prefix}"
