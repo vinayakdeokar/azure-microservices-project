@@ -14,7 +14,7 @@ A production-ready, cloud-native E-Commerce application architected with microse
 - **Advanced Ingress Routing**: Powered by Azure Application Gateway Ingress Controller (AGIC) for efficient Layer 7 load balancing.
 - **Cross-Platform Compatibility**: Docker builds supporting ARM64 architectures for modern cloud instances.
 
----
+----
 
 ##  Architecture Design
 
