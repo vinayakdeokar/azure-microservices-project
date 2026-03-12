@@ -104,9 +104,9 @@ stages:
         kubectl get svc $(serviceName)-service -n ${{ parameters.ENVIRONMENT }}
       displayName: Verify Deployment
 
-# ==========================================
+# ===========================================
 # STAGE 3: PROMOTE & DEPLOY TO QA
-# ==========================================
+# ===========================================
 - stage: DeployQA
   dependsOn: [] 
   condition: eq('${{ parameters.ENVIRONMENT }}', 'qa')
