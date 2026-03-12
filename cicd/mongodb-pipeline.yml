@@ -80,7 +80,6 @@ stages:
           $ns = "${{ parameters.ENVIRONMENT }}"
           $nsExists = kubectl get namespace $ns --ignore-not-found
           if (-not $nsExists) { kubectl create namespace $ns }
-
     - script: |
         kubectl apply -f $(kube_manifest_path)/mongodb.yaml -n ${{ parameters.ENVIRONMENT }}
         kubectl apply -f $(kube_manifest_path)/mongo-seed.yaml -n ${{ parameters.ENVIRONMENT }}
