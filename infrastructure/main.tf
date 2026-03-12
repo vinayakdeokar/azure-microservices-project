@@ -141,6 +141,33 @@ module "autoscaler" {
 }
 
 # ---------------------------------------
+# AGIC RBAC Roles
+# ---------------------------------------
+resource "azurerm_role_assignment" "agic_network" {
+  scope                = module.network.dmz_subnet_id
+  role_definition_name = "Network Contributor"
+  principal_id         = module.aks.agic_identity_id
+}
+
+resource "azurerm_role_assignment" "agic_appgw" {
+  scope                = module.app_gateway.app_gateway_id
+  role_definition_name = "Contributor"
+  principal_id         = module.aks.agic_identity_id
+}
+
+# ---------------------------------------
+# Cert Manager Module
+# ---------------------------------------
+module "cert_manager" {
+  source      = "./modules/cert_manager"
+  email       = "admin@ecom-store-vd.duckdns.org" # You can move this to variables later
+  environment = var.environment
+
+  depends_on = [module.aks]
+}
+
+
+# ---------------------------------------
 # Central Tags Module
 # ---------------------------------------
 module "tags" {
