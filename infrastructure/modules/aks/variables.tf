@@ -45,4 +45,8 @@ variable "app_gateway_id" {
   description = "Application Gateway ID for AGIC"
   type        = string
 }
+variable "acr_id" {
+  description = "The ID of the Azure Container Registry to attach"
+  type        = string
+}
 

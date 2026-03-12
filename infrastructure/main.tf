@@ -64,6 +64,7 @@ module "aks" {
   cluster_name       = var.aks_name
   vnet_subnet_id     = module.network.app_subnet_id
   app_gateway_id     = module.app_gateway.app_gateway_id
+  acr_id             = module.acr.acr_id
   kubernetes_version = var.kubernetes_version
   node_count         = var.node_count
   vm_size            = var.vm_size
