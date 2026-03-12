@@ -66,19 +66,3 @@ resource "azurerm_application_gateway" "appgw" {
   }
 
 }
-# ---------------------------------------------------------
-# Automatically update Duck DNS when Public IP changes
-# ---------------------------------------------------------
-resource "null_resource" "update_duckdns" {
-  triggers = {
-    public_ip    = azurerm_public_ip.appgw_pip.ip_address
-    force_update = timestamp()
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["powershell", "-Command"]
-    command = "Invoke-WebRequest -Uri \"https://www.duckdns.org/update?domains=${var.duckdns_domain}&token=${var.duckdns_token}&ip=${azurerm_public_ip.appgw_pip.ip_address}\""
-  }
-
-  depends_on = [azurerm_public_ip.appgw_pip]
-}
