@@ -12,3 +12,14 @@ variable "appgw_subnet_id" {
 variable "tags" {
   type = map(string)
 }
+
+variable "duckdns_domain" {
+  type        = string
+  description = "The Duck DNS subdomain (e.g., ecom-store-vd)"
+}
+
+variable "duckdns_token" {
+  type        = string
+  description = "The Duck DNS token"
+  sensitive   = true
+}
