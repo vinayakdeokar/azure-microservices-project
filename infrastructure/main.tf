@@ -143,14 +143,14 @@ module "autoscaler" {
 # ---------------------------------------
 # Central Tags Module
 # ---------------------------------------
-module "tags" {
-  source      = "./modules/tags"
-  environment = var.environment
-  project     = var.project
-  owner       = var.owner
-  cost_center = var.cost_center
-}
+# module "tags" {
+#   source      = "./modules/tags"
+#   environment = var.environment
+#   project     = var.project
+#   owner       = var.owner
+#   cost_center = var.cost_center
+# }
 
-locals {
-  name_prefix = "${var.project}-${var.environment}"
-}
+# locals {
+#   name_prefix = "${var.project}-${var.environment}"
+# }
